@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'coffee-script'
 require 'pathname'
+require 'kul_base_controller'
 
 class String
   def classify
@@ -9,20 +10,7 @@ class String
 end
 
 class KulServer < Sinatra::Base
-  set :public_folder, File.dirname(__FILE__) + '/static'
   Tilt.register Tilt::ERBTemplate, 'html.erb'
-
-  def herb(template, options={}, locals={})
-    render "html.erb", template, options, locals
-  end
-
-  #get '/test' do
-  #  send_file File.join(settings.public_folder, 'test-runner.html')
-  #end
-
-  get '/demo' do
-    send_file File.join(settings.public_folder, 'demo.html')
-  end
 
   get '/lib/:filename.js' do
     CoffeeScript.compile File.read(File.join("lib", params[:filename] + ".coffee"))
@@ -30,9 +18,6 @@ class KulServer < Sinatra::Base
 
   get '/favicon.ico' do
     send_file "favicon.ico"
-  end
-
-  def process_request
   end
 
   # TODO: Figure out how to do post
@@ -49,37 +34,26 @@ class KulServer < Sinatra::Base
       puts 'failed controller'
       raise Sinatra::NotFound
     end
-    if Pathname.new('server.rb').exist?
-      require('server.rb')
-    end
-    if app_path.join('app.rb').exist?
-      require app_path.join('app.rb').to_s
-    end
-    if controller_path.join('controller.rb').exist?
-      require controller_path.join('controller.rb').to_s
-    end
-    if Object.const_defined? params[:controller].classify
-      controller_object = Object.const_get(params[:controller].classify).new
-      if controller_object.respond_to? params[:action]
-        controller_object.send(params[:action])
-        puts "template: #{ controller_path.join('bar.html.erb') }"
-        Tilt.new(controller_path.join('bar.html.erb').to_s).render(controller_object)
-      end
+
+    load 'server.rb' if Pathname.new('server.rb').exist?
+    app_file = app_path.join("#{ params[:app] }/#{ params[:app] }_app.rb")
+    load(app_file.to_s) if app_file.exist?
+    controller_file = app_path.join("#{ params[:controller] }/#{ params[:controller] }_controller.rb")
+    load(controller_file.to_s) if controller_file.exist?
+
+    controller_object = build_controller params[:controller]
+    controller_object.params = params
+    controller_object.do_action
+    controller_object.do_render
+  end
+
+  def build_controller(controller_name)
+    controller_class = "#{ controller_name }_controller".classify
+    if Object.const_defined? controller_class
+      controller_object = Object.const_get(controller_class).new
     else
-
+      controller_object = KulBaseController.new
     end
-      # if no view specified, then render the default view
-    #"params: " + params.to_s
-
-    #controller.to_sym.new
-    #route = params[:splat].first
-    #if Pathname.new(route + '.rb').exist?
-    #  eval(File.read(route + '.rb'))
-    #  puts "Foo test: #{@foo}"
-    #end
-    #template = Dir.glob(params[:splat].first + '.html.*').first
-    ##herb params[:splat].first.to_sym
-    #Tilt.new(template).render(self)
   end
 
 end
