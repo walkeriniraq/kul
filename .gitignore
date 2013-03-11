@@ -2,8 +2,12 @@
 *.rbc
 .bundle
 .config
-coverage
+.yardoc
+Gemfile.lock
 InstalledFiles
+_yardoc
+coverage
+doc/
 lib/bundler/man
 pkg
 rdoc
@@ -13,9 +17,3 @@ test/version_tmp
 tmp
 .idea
 *.iml
-*.lock
-
-# YARD artifacts
-.yardoc
-_yardoc
-doc/

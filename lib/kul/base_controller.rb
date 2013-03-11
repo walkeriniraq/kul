@@ -1,4 +1,4 @@
-class KulBaseController
+class Kul::BaseController
 
   attr_accessor :params
 
