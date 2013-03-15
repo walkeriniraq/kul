@@ -56,7 +56,7 @@ class Kul::Server < Sinatra::Base
     if Object.const_defined? controller_class
       controller_object = Object.const_get(controller_class).new
     else
-      controller_object = BaseController.new
+      controller_object = Kul::BaseController.new
     end
   end
 
