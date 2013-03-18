@@ -16,3 +16,4 @@ end
 require 'kul/base_controller'
 require 'kul/server'
 require 'kul/version'
+require 'kul/router'

@@ -1,0 +1,3 @@
+module Kul::ServerConnection
+
+end
