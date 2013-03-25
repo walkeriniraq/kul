@@ -40,8 +40,10 @@ describe Kul::Router do
 
     context 'html files' do
       it 'routes to the server when no html file present' do
-        pending 'Not yet implemented'
+        Kul::ServerConnection.should_receive(:route_to_server).with("non_exist", an_instance_of(Hash)) { "foo" }
         get '/non_exist.html'
+        last_response.should be_ok
+        last_response.body.should == "foo"
       end
 
       it 'sends the html file content if it exists' do
@@ -54,7 +56,13 @@ describe Kul::Router do
     end
 
     context 'controller action' do
-      it 'gets routed to the server'
+      it 'gets routed to the server' do
+        Kul::ServerConnection.should_receive(:route_controller).with(an_instance_of(Hash)) { "foo" }
+        get '/foo/bar/baz'
+        last_response.should be_ok
+        last_response.body.should == "foo"
+      end
+
     #  it 'returns 404 when there is no action method' do
     #    get '/foo/bar/notexist'
     #    last_response.should be_not_found

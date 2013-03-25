@@ -1,7 +1,6 @@
 require 'kul/server_connection'
 
 class Kul::Router < Sinatra::Base
-  include Kul::ServerConnection
 
   get '/favicon.ico' do
     send_file "favicon.ico"
@@ -10,9 +9,12 @@ class Kul::Router < Sinatra::Base
   get '/*.html' do
     path = Pathname.new("#{params[:splat].first}.html")
     send_file path.to_s if path.exist?
+    Kul::ServerConnection.route_to_server params[:splat].first, params
   end
 
-  #get '/:app/:controller/:action' do
+  get '/:app/:controller/:action' do
+    Kul::ServerConnection.route_controller params
+  end
   #  #  # process route
   #  #  app_path = Pathname.new(params[:app])
   #  #  unless app_path.directory?
