@@ -8,7 +8,7 @@ describe Kul::Router do
     Kul::Router.new
   end
 
-  context 'explicit server routing' do
+  context 'explicit routing' do
   end
 
   context 'implicit server routing' do
@@ -40,7 +40,10 @@ describe Kul::Router do
 
     context 'html files' do
       it 'routes to the server when no html file present' do
-        Kul::ServerConnection.should_receive(:route_to_server).with("non_exist", an_instance_of(Hash)) { "foo" }
+        server_connection = stub
+        server_connection.should_receive(:route_path).with("non_exist", an_instance_of(Hash)) { "foo" }
+        Kul::ServerConnection.should_receive(:new) { server_connection }
+        #Kul::ServerConnection.should_receive(:route_to_server).with("non_exist", an_instance_of(Hash)) { "foo" }
         get '/non_exist.html'
         last_response.should be_ok
         last_response.body.should == "foo"
@@ -57,7 +60,9 @@ describe Kul::Router do
 
     context 'controller action' do
       it 'gets routed to the server' do
-        Kul::ServerConnection.should_receive(:route_controller).with(an_instance_of(Hash)) { "foo" }
+        server_connection = stub
+        server_connection.should_receive(:route_action).with(an_instance_of(Hash)) { "foo" }
+        Kul::ServerConnection.should_receive(:new) { server_connection }
         get '/foo/bar/baz'
         last_response.should be_ok
         last_response.body.should == "foo"

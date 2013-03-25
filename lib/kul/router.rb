@@ -9,11 +9,11 @@ class Kul::Router < Sinatra::Base
   get '/*.html' do
     path = Pathname.new("#{params[:splat].first}.html")
     send_file path.to_s if path.exist?
-    Kul::ServerConnection.route_to_server params[:splat].first, params
+    Kul::ServerConnection.new.route_path params[:splat].first, params
   end
 
   get '/:app/:controller/:action' do
-    Kul::ServerConnection.route_controller params
+    Kul::ServerConnection.new.route_action params
   end
   #  #  # process route
   #  #  app_path = Pathname.new(params[:app])

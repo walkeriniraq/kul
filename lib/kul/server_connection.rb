@@ -1,9 +1,9 @@
 module Kul::ServerConnection
-  def route_to_server(route, params)
+  def self.route_path(path, params)
     raise 'Not implemented'
   end
 
-  def route_controller(params)
+  def self.route_action(params)
     raise 'Not implemented'
   end
 end
