@@ -1,23 +1,16 @@
 module TestAppHelper
-  #before(:each) do
-  #  @path = Dir.getwd
-  #  Dir.chdir File.join(File.dirname(__FILE__), 'test_app_files')
-  #end
-  #
-  #after(:each) do
-  #  Dir.chdir @path
-  #end
 
-  def inside_test_app(&block)
-    @path = Dir.getwd
-    Dir.chdir File.join(File.dirname(__FILE__), 'test_app_files')
-    yield
-    Dir.chdir @path
+  def inside_test_server(&block)
+    test_server_context 'normal_test_server', &block
   end
 
-  def inside_empty_app
+  def inside_empty_server(&block)
+    test_server_context 'empty_test_server', &block
+  end
+
+  def test_server_context(folder)
     path = Dir.getwd
-    Dir.chdir File.join(File.dirname(__FILE__), 'empty_test_app')
+    Dir.chdir File.join(File.dirname(__FILE__), 'testing_files', folder)
     yield
     Dir.chdir path
   end

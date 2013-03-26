@@ -1,5 +1,9 @@
 class Kul::BaseController
 
+  def process_action(params)
+
+  end
+
   #attr_accessor :params
   #
   #def do_action

@@ -1,3 +1,0 @@
-class BarController
-
-end

@@ -1,4 +1,4 @@
-require 'kul/server_connection'
+require 'kul/server_factory'
 
 class Kul::Router < Sinatra::Base
 
@@ -9,12 +9,15 @@ class Kul::Router < Sinatra::Base
   get '/*.html' do
     path = Pathname.new("#{params[:splat].first}.html")
     send_file path.to_s if path.exist?
-    Kul::ServerConnection.new.route_path params[:splat].first, params
+    Kul::ServerFactory.create_server.route_path params[:splat].first, params
   end
 
   get '/:app/:controller/:action' do
-    Kul::ServerConnection.new.route_action params
+    Kul::ServerFactory.create_server.route_action params
   end
+
+  #Tilt.register Tilt::ERBTemplate, 'html.erb'
+
   #  #  # process route
   #  #  app_path = Pathname.new(params[:app])
   #  #  unless app_path.directory?
@@ -59,7 +62,5 @@ class Kul::Router < Sinatra::Base
   #  load(app_file.to_s) if app_file.exist?
   #
   #end
-  #
-
 
 end

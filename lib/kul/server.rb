@@ -1,15 +1,13 @@
-require 'pathname'
-require 'pry'
+require 'kul/app'
+require 'kul/server_factory'
 
 class Kul::Server
-  Tilt.register Tilt::ERBTemplate, 'html.erb'
 
-  def create_controller(app_name, controller_name)
-    controller_file = Pathname.new(Dir.getwd).join("#{app_name}/#{ controller_name }/#{ controller_name }_controller.rb")
-    load(controller_file.to_s) if controller_file.exist?
-    controller_class = "#{ controller_name }_controller".classify
-    return Object.const_get(controller_class).new if Object.const_defined? controller_class
-    #raise Sinatra::NotFound
+  def route_action(params)
+    controller = Kul::ServerFactory.create_controller(params['app'], params['controller'])
+    return controller.process_action(params) if controller.respond_to? :process_action
+    return controller.send(params['action'], params) if controller.respond_to? params['action']
+    raise Sinatra::NotFound
   end
 
 end
