@@ -54,6 +54,17 @@ describe Kul::Router do
         last_response.should be_ok
         last_response.body.should == "foo"
       end
+
+      it 'routes to the server when the request is for an erb' do
+        inside_test_server do
+          server = stub
+          server.should_receive(:route_path).with("foo/bar/test_erb", an_instance_of(Hash)) { "foo" }
+          Kul::ServerFactory.should_receive(:create_server) { server }
+          get '/foo/bar/test_erb.html'
+          last_response.should be_ok
+          last_response.body.should == "foo"
+        end
+      end
     end
 
     context 'controller action' do

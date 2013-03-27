@@ -2,8 +2,20 @@ require 'spec_helper'
 
 describe Kul::Server do
   context '.route_path' do
-    it 'returns 404 when the file does not exist'
-    it 'returns ok when the file renders'
+    it 'returns 404 when the file does not exist' do
+      inside_test_server do
+        expect { Kul::Server.new.route_path 'not_exist', {} }.to raise_exception(Sinatra::NotFound)
+      end
+    end
+
+    it 'returns the rendered file' do
+      inside_test_server do
+        test = Kul::Server.new.route_path 'foo/bar/test_erb', {}
+        test.should be
+        test.should == 'This is my test'
+      end
+    end
+
     context 'request context provided to the template' do
       it 'includes the server'
       it 'includes the app'
