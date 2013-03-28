@@ -17,9 +17,42 @@ describe Kul::Server do
     end
 
     context 'request context provided to the template' do
-      it 'includes the server'
-      it 'includes the app'
-      it 'includes request parameters'
+      it 'includes the server' do
+        # given this particular set of objects, I'm not really sure how else to test this
+        inside_test_server do
+          server = Kul::Server.new
+          server.instance_variable_set('@blah', 'foobar')
+          test = server.route_path 'foo/bar/server_context_test', {}
+          test.should == 'foobar'
+        end
+      end
+
+      it 'includes the app' do
+        inside_test_server do
+          test = Kul::Server.new.route_path 'foo/bar/app_context_test', {}
+          test.should == 'Used in server_spec - .route_path - includes the app'
+        end
+      end
+
+      it 'includes request parameters' do
+        inside_test_server do
+          test = Kul::Server.new.route_path 'foo/bar/params_context_test', { blah: 'This is a test' }
+          test.should == 'This is a test'
+        end
+      end
+    end
+  end
+
+  context '.find_app' do
+    it 'returns the path from the string passed in' do
+      test = Kul::Server.new.find_app('foo/bar/blah')
+      test.should be
+      test.should == 'foo'
+    end
+
+    it 'returns nil when there is no separator' do
+      test = Kul::Server.new.find_app('foo')
+      test.should be_nil
     end
   end
 
