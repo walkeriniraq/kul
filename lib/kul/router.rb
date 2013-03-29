@@ -12,6 +12,14 @@ class Kul::Router < Sinatra::Base
     Kul::ServerFactory.create_server.route_path params[:splat].first, params
   end
 
+  get '/*.js' do
+    path = Pathname.new("#{params[:splat].first}.js")
+    send_file path.to_s if path.exist?
+    path = Pathname.new("#{params[:splat].first}.js.coffee")
+    return CoffeeScript.compile File.read(path) if path.exist?
+    raise Sinatra::NotFound
+  end
+
   get '/:app/:controller/:action' do
     Kul::ServerFactory.create_server.route_action params
   end
@@ -46,10 +54,6 @@ class Kul::Router < Sinatra::Base
   #  #  controller_object.do_render
   #end
 
-  #get '/lib/:filename.js' do
-  #  CoffeeScript.compile File.read(File.join("lib", params[:filename] + ".coffee"))
-  #end
-  #
   ## TODO: Figure out how to do post
   #get '/:app/:template' do
   #  app_path = Pathname.new(params[:app])

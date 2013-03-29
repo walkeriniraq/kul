@@ -20,6 +20,31 @@ describe Kul::Router do
       end
     end
 
+    context '.js files' do
+      it 'returns the javascript file' do
+        inside_test_server do
+          get '/test.js'
+          last_response.should be_ok
+          last_response.body.should == "function foo() { alert('Hi'); }"
+        end
+      end
+
+      it 'returns 404 when the file is not present' do
+        inside_test_server do
+          get '/notexist.js'
+          last_response.should be_not_found
+        end
+      end
+
+      it 'compiles and returns javascript from a .js.coffee file' do
+        inside_test_server do
+          get '/js/test_coffee.js'
+          last_response.should be_ok
+          last_response.body.should == "(function() {\n\n  window.foo = function() {\n    return alert('Hi');\n  };\n\n}).call(this);\n"
+        end
+      end
+    end
+
     context 'favicon.ico' do
       it 'returns ok status when file is present' do
         inside_test_server do

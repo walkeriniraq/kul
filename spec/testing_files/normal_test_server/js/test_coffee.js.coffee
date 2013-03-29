@@ -1,0 +1,2 @@
+window.foo = ->
+  alert 'Hi'
