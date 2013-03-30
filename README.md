@@ -6,17 +6,18 @@ Description
 -----------
 
 Kul is designed to be a simpler web application framework. The goal is to merge the flexibility of something
-like .JSPs with the power of Rails.
+like .JSPs with the power of Rails. It should be so easy to use that it can be a teaching / training tool for
+people who don't know ruby, web development, or (maybe) even programming!
 
 It is a work in progress, but feel free to check out and mess with it if you like.
 
 Planning and requirements
 -------------------------
-(excruciating details at blogs.rylath.net)
+(more detail at [blogs.rylath.net](http://blogs.rylath.net))
 
 Currently the Ruby app server space is dominated by Rails, with Sinatra providing backup. (Totally stole that joke.) From my
 perspective, they are at opposite ends of the spectrum, with Rails doing MANY things for a developer, and Sinatra doing few
-things. The few Sinatra apps I've built tend to have similar patterns, while in Rails I find myself repeating edit patterns
+things. The few Sinatra apps I've built tend to have similar patterns, while in Rails I find myself repeatedly editing patterns
 in order to accomplish what I want to do.
 
 Kul is designed to be very agile. In the old days a web page was just an HTML file that lived on a server somewhere - Kul tries
@@ -27,9 +28,10 @@ implicit routing. And then add a controller to that folder for full MVC architec
 Near-term features:
 - Rendering of .html.erb files as html files
 - Compiling .js.coffee as javascript
-- Compiling .css.sass as CSS
+- Compiling .css.scss as CSS
 - Server / Application / Controller base classes and defaults
 - Implicit routing to templates and actions
+- "gem install kul" and "kul run" should get the server running
 - ?
 
 Long-term features:
