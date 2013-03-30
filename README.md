@@ -32,6 +32,8 @@ Near-term features:
 - Server / Application / Controller base classes and defaults
 - Implicit routing to templates and actions
 - "gem install kul" and "kul run" should get the server running
+- Explicit routing paths
+- Implicit routing of index.html
 - ?
 
 Long-term features:
