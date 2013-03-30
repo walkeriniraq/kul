@@ -45,6 +45,16 @@ describe Kul::Router do
       end
     end
 
+    context '.css files' do
+      it 'returns the css file' do
+        inside_test_server do
+          get '/test.css'
+          last_response.should be_ok
+          last_response.body.should == ".test {\n      color: blue;\n}"
+        end
+      end
+    end
+
     context 'favicon.ico' do
       it 'returns ok status when file is present' do
         inside_test_server do
