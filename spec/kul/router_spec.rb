@@ -40,7 +40,8 @@ describe Kul::Router do
         inside_test_server do
           get '/js/test_coffee.js'
           last_response.should be_ok
-          last_response.body.should == "(function() {\n\n  window.foo = function() {\n    return alert('Hi');\n  };\n\n}).call(this);\n"
+          last_response.body.should include 'window.foo = function()'
+          last_response.body.should include "return alert('Hi');"
         end
       end
     end
@@ -50,7 +51,23 @@ describe Kul::Router do
         inside_test_server do
           get '/test.css'
           last_response.should be_ok
-          last_response.body.should == ".test {\n      color: blue;\n}"
+          #noinspection RubyResolve
+          last_response.body.should include '.test {'
+          last_response.body.should include 'color: blue;'
+        end
+      end
+
+      it 'returns 404 when the file is not present' do
+        get '/notexist.css'
+        last_response.should be_not_found
+      end
+
+      it 'compiles and returns css from a .css.scss file' do
+        inside_test_server do
+          get '/css/test_sass.css'
+          last_response.should be_ok
+          last_response.body.should include '.test .foo'
+          last_response.body.should include 'color: #00009b;'
         end
       end
     end
