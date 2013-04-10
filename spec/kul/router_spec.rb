@@ -11,6 +11,17 @@ describe Kul::Router do
   end
 
   context 'implicit server routing' do
+
+    context 'files outside of the server path' do
+      it 'returns 404' do
+        inside_test_server do
+          # it seems that sinatra fixes this itself - yay sinatra!
+          get '/../not_reachable_file.html'
+          last_response.should be_not_found
+        end
+      end
+    end
+
     context '.rb files' do
       it 'returns 404' do
         inside_test_server do
@@ -94,7 +105,23 @@ describe Kul::Router do
         inside_test_server do
           get '/no_app/test.html'
           last_response.should be_ok
-          last_response.body.should be == 'Some random text'
+          last_response.body.should == 'Some random text'
+        end
+      end
+
+      it 'routes to the index.html file if a directory is specified' do
+        inside_test_server do
+          get '/foo/'
+          last_response.should be_ok
+          last_response.body.should == 'This is another index.html!'
+        end
+      end
+
+      it 'routes to the index.html for the root' do
+        inside_test_server do
+          get '/'
+          last_response.should be_ok
+          last_response.body.should == 'This is the index.html!'
         end
       end
 
