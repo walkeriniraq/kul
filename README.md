@@ -26,14 +26,14 @@ to the files there. Turn that folder into an application by adding a single ruby
 implicit routing. And then add a controller to that folder for full MVC architecture.
 
 Near-term features:
-- Rendering of .html.erb files as html files
-- Compiling .js.coffee as javascript
-- Compiling .css.scss as CSS
+x Rendering of .html.erb files as html files
+x Compiling .js.coffee as javascript
+x Compiling .css.scss as CSS
 - Server / Application / Controller base classes and defaults
-- Implicit routing to templates and actions
-- "gem install kul" and "kul run" should get the server running
+x Implicit routing to templates and actions
+x "gem install kul" and "kul" should get the server running
 - Explicit routing paths
-- Implicit routing of index.html
+x Implicit routing of index.html
 - ?
 
 Long-term features:

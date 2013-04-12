@@ -1,4 +1,4 @@
-require 'kul/server_factory'
+require 'kul/framework_factory'
 require 'sass'
 
 class Kul::Router < Sinatra::Base
@@ -12,7 +12,7 @@ class Kul::Router < Sinatra::Base
   end
 
   get '/:app/:controller/:action' do
-    Kul::ServerFactory.create_server.route_action params
+    Kul::FrameworkFactory.create_server.route_action params
   end
 
   get '/' do
@@ -38,7 +38,7 @@ class Kul::Router < Sinatra::Base
     when 'js'
       return Tilt.new("#{file_path}.js.coffee").render if File.exists? "#{file_path}.js.coffee"
     when 'html'
-      return Kul::ServerFactory.create_server.route_path file_path, params
+      return Kul::FrameworkFactory.create_server.route_path file_path, params
     end
     nil
   end

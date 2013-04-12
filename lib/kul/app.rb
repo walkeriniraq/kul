@@ -1,3 +1,0 @@
-class Kul::App
-
-end

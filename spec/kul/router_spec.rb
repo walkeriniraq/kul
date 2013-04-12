@@ -128,7 +128,7 @@ describe Kul::Router do
       it 'routes to the server when no html file present' do
         server = stub
         server.should_receive(:route_path).with("non_exist", an_instance_of(Hash)) { "foo" }
-        Kul::ServerFactory.should_receive(:create_server) { server }
+        Kul::FrameworkFactory.should_receive(:create_server) { server }
         get '/non_exist.html'
         last_response.should be_ok
         last_response.body.should == "foo"
@@ -138,7 +138,7 @@ describe Kul::Router do
         inside_test_server do
           server = stub
           server.should_receive(:route_path).with("foo/bar/test_erb", an_instance_of(Hash)) { "foo" }
-          Kul::ServerFactory.should_receive(:create_server) { server }
+          Kul::FrameworkFactory.should_receive(:create_server) { server }
           get '/foo/bar/test_erb.html'
           last_response.should be_ok
           last_response.body.should == "foo"
@@ -150,7 +150,7 @@ describe Kul::Router do
       it 'gets routed to the server' do
         server = stub
         server.should_receive(:route_action).with(an_instance_of(Hash)) { "foo" }
-        Kul::ServerFactory.should_receive(:create_server) { server }
+        Kul::FrameworkFactory.should_receive(:create_server) { server }
         get '/foo/bar/baz'
         last_response.should be_ok
         last_response.body.should == "foo"

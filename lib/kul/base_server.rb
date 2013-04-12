@@ -1,12 +1,10 @@
-require 'kul/app'
-require 'kul/server_factory'
+require 'kul/framework_factory'
 require 'kul/request_context'
 
-class Kul::Server
+class Kul::BaseServer
 
   def route_path(path, params)
-    #app = Kul::ServerFactory.create_app(find_app path)
-    app = Kul::ServerFactory.create_app('foo')
+    app = Kul::FrameworkFactory.create_app(find_app path)
     return Tilt.new("#{path}.html.erb").render(Kul::RequestContext.new(self, app, params)) if File.exists? "#{path}.html.erb"
     raise Sinatra::NotFound
   end
@@ -16,7 +14,7 @@ class Kul::Server
   end
 
   def route_action(params)
-    controller = Kul::ServerFactory.create_controller(params['app'], params['controller'])
+    controller = Kul::FrameworkFactory.create_controller(params['app'], params['controller'])
     return controller.process_action(params) if controller.respond_to? :process_action
     return controller.send(params['action'], params) if controller.respond_to? params['action']
     raise Sinatra::NotFound

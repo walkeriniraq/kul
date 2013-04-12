@@ -1,6 +1,9 @@
 require 'sinatra/base'
 require 'coffee-script'
 
+require 'kul/version'
+require 'kul/router'
+
 class String
   def classify
     return self.split('_').collect(&:capitalize).join
@@ -12,8 +15,3 @@ module Kul
     Kul::Router.run!
   end
 end
-
-require 'kul/base_controller'
-require 'kul/server'
-require 'kul/version'
-require 'kul/router'

@@ -1,6 +1,9 @@
 require 'pathname'
+require 'kul/base_controller'
+require 'kul/base_server'
+require 'kul/base_app'
 
-class Kul::ServerFactory
+class Kul::FrameworkFactory
 
   def self.create_server
     self.new.create_server
@@ -17,7 +20,7 @@ class Kul::ServerFactory
   def create_server
     load './server.rb' if File.exists? 'server.rb'
     return Object.const_get('Server'.classify).new if Object.const_defined? 'Server'.classify
-    Kul::Server.new
+    Kul::BaseServer.new
   end
 
   def create_app(app_name)
@@ -25,7 +28,7 @@ class Kul::ServerFactory
     load(app_file.to_s) if app_file.exist?
     app_class = "#{app_name}_app".classify
     return Object.const_get(app_class).new if Object.const_defined? app_class
-    Kul::App.new
+    Kul::BaseApp.new
   end
 
   def create_controller(app_name, controller_name)
