@@ -2,6 +2,7 @@ require 'kul/framework_factory'
 require 'sass'
 
 class Kul::Router < Sinatra::Base
+  set :extensions, ['html', 'js', 'css']
 
   get '/favicon.ico' do
     send_file "favicon.ico"
@@ -25,11 +26,7 @@ class Kul::Router < Sinatra::Base
   end
 
   def try_render(file_path, extension)
-    # TODO: get this from the server somehow?
-    # there's gotta be a better way to do this
-    route_extensions = ['html', 'js', 'css']
-
-    return unless route_extensions.include? extension
+    return unless settings.extensions.include? extension
     path = Pathname.new("#{file_path}.#{extension}")
     send_file path.to_s if path.exist?
     case extension
@@ -41,16 +38,6 @@ class Kul::Router < Sinatra::Base
       return Kul::FrameworkFactory.create_server.route_path file_path, params
     end
     nil
-  end
-
-  def send_text(text, type='html')
-    file = Rack::File.new nil
-    file.path = path
-    result = file.serving env
-    result[1].each { |k, v| headers[k] ||= v }
-    halt result[0], result[2]
-  rescue Errno::ENOENT
-    not_found
   end
 
 end

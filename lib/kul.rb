@@ -12,6 +12,7 @@ end
 
 module Kul
   def Kul.run!
+    # TODO: figure out some way of getting the config and then set the routing options
     Kul::Router.run!
   end
 end

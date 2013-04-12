@@ -34,6 +34,8 @@ x Implicit routing to templates and actions
 x "gem install kul" and "kul" should get the server running
 - Explicit routing paths
 x Implicit routing of index.html
+- config file (auto-reloading? would be awesome)
+- Auto-loading (and reloading) of model / lib folders in server and app
 - ?
 
 Long-term features:
