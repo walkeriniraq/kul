@@ -1,7 +1,10 @@
 class Kul::BaseController
 
   def process_action(params)
-
+    return send(params['action']) if respond_to? params['action']
+    path = "#{params['app']}/#{params['controller']}/#{params['action']}"
+    return Tilt.new("#{path}.html.erb").render if File.exists? "#{path}.html.erb"
+    raise Sinatra::NotFound
   end
 
   #attr_accessor :params

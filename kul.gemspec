@@ -1,4 +1,8 @@
-# coding: utf-8
+#!/usr/bin/env gem build
+# encoding: utf-8
+
+require "base64"
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'kul/version'
@@ -7,12 +11,13 @@ Gem::Specification.new do |spec|
   spec.name          = 'kul'
   spec.version       = Kul::VERSION
   spec.authors       = ['Nathan Walker']
-  spec.email         = ['nathan@rylath.net']
+  spec.email         = [Base64.decode64('bmF0aGFuQHJ5bGF0aC5uZXQ=\n')]
   spec.description   = 'Kul Application Server'
   spec.summary       = 'A simple and dynamic web application server.'
   spec.homepage      = 'http://rubygems.org/gems/kul'
   spec.license       = 'MIT'
 
+  # this would be a problem on a system without git
   spec.files         = `git ls-files`.split($/)
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
