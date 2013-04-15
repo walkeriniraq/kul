@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.email         = [Base64.decode64('bmF0aGFuQHJ5bGF0aC5uZXQ=\n')]
   spec.description   = 'Kul Application Server'
   spec.summary       = 'A simple and dynamic web application server.'
-  spec.homepage      = 'http://rubygems.org/gems/kul'
+  spec.homepage      = 'http://github.com/walkeriniraq/kul'
   spec.license       = 'MIT'
 
   # this would be a problem on a system without git
