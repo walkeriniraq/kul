@@ -13,7 +13,8 @@ class Kul::Router < Sinatra::Base
   end
 
   get '/:app/:controller/:action' do
-    Kul::FrameworkFactory.create_server.route_action params
+    response = Kul::FrameworkFactory.create_server.route_action params: params
+    response.render
   end
 
   get '/' do
@@ -21,7 +22,7 @@ class Kul::Router < Sinatra::Base
   end
 
   get '/*' do
-    try_render "#{params[:splat].first.to_s}index", 'html'
+    try_render "#{params[:splat].first.to_s}/index", 'html'
     not_found
   end
 

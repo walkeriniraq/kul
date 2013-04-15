@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Kul::FrameworkFactory do
 
-  context '.create_server' do
+  context '#create_server' do
     context 'when there is no server.rb file' do
       it 'should return a server object' do
         inside_empty_server do
@@ -32,31 +32,31 @@ describe Kul::FrameworkFactory do
     end
   end
 
-  context '.create_controller' do
-    it 'creates a controller' do
+  context '#find_module' do
+    it 'returns nil if the controller file does not exist' do
+      inside_empty_server do
+        test = Kul::FrameworkFactory.find_module 'test', 'more_test'
+        test.should be_nil
+      end
+    end
+    it 'returns nil if the folder structure does not exist' do
+      inside_empty_server do
+        test = Kul::FrameworkFactory.find_module 'foo', 'bar'
+        test.should be_nil
+      end
+    end
+    
+    it 'returns the module from the file if it exists' do
       inside_test_server do
-        test = Kul::FrameworkFactory.new.create_controller 'foo', 'bar'
+        test = Kul::FrameworkFactory.find_module 'foo', 'bar'
         test.should be
-        test.should be_a(BarController)
-      end
-    end
-
-    it 'returns nil if no controller file' do
-      inside_empty_server do
-        test = Kul::FrameworkFactory.new.create_controller 'test', 'more_test'
-        test.should be_nil
-      end
-    end
-
-    it 'returns nil if no controller folder' do
-      inside_empty_server do
-        test = Kul::FrameworkFactory.new.create_controller 'test', 'blarg'
-        test.should be_nil
+        test.should be_a Module
+        test.to_s.should == 'Foo::Bar'
       end
     end
   end
 
-  context '.create_app' do
+  context '#create_app' do
     it 'creates an app instance' do
       inside_test_server do
         test = Kul::FrameworkFactory.new.create_app 'foo'

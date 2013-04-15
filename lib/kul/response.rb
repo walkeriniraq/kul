@@ -1,0 +1,2 @@
+class Kul::Response
+end

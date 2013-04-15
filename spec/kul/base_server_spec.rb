@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Kul::BaseServer do
-  context '.route_path' do
+  context '#route_path' do
     it 'returns 404 when the file does not exist' do
       inside_test_server do
         expect { Kul::BaseServer.new.route_path 'not_exist', {} }.to raise_exception(Sinatra::NotFound)
@@ -36,14 +36,14 @@ describe Kul::BaseServer do
 
       it 'includes request parameters' do
         inside_test_server do
-          test = Kul::BaseServer.new.route_path 'foo/bar/params_context_test', { blah: 'This is a test' }
+          test = Kul::BaseServer.new.route_path 'foo/bar/params_context_test', {blah: 'This is a test'}
           test.should == 'This is a test'
         end
       end
     end
   end
 
-  context '.find_app' do
+  context '#find_app' do
     it 'returns the path from the string passed in' do
       test = Kul::BaseServer.new.find_app('foo/bar/blah')
       test.should be
@@ -56,38 +56,101 @@ describe Kul::BaseServer do
     end
   end
 
-  context '.route_action' do
-    it 'raises NotFound when the controller does not exist' do
-      inside_test_server do
-        expect { Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'foo', 'action' => 'action' }.to raise_exception(Sinatra::NotFound)
-      end
-    end
-
-    it 'raises NotFound when there is no action method' do
-      controller = stub
-      controller.should_receive(:respond_to?).twice { false }
-      Kul::FrameworkFactory.should_receive(:create_controller).with('foo', 'bar') { controller }
-      expect { Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'bar', 'action' => 'not_exist' }.to raise_exception(Sinatra::NotFound)
-    end
-
-    context 'when process_action is not present' do
-      it 'sends the action directly to the class' do
+  context '#route_action' do
+    context 'when the controller module does not exist' do
+      it 'returns a NotFound response when there is no template' do
         inside_test_server do
-          test = Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'baz', 'action' => 'some_action'
-          test.should == 'Some crazy thing'
+          Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'not_exist').once.and_return nil
+          request = { params: { 'app' => 'foo', 'controller' => 'not_exist', 'action' => 'action' } }
+          test = Kul::BaseServer.new.route_action request
+          test.should be_a ResponseNotFound
+        end
+      end
+
+      it 'renders the template when it exists' do
+        inside_test_server do
+          Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return nil
+          request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'action' } }
+          test = Kul::BaseServer.new.route_action request
+          test.should be_a ResponseRenderTemplate
         end
       end
     end
-
-    context 'when process_action is present' do
-      it 'forwards action request' do
-        controller = stub
-        controller.should_receive(:process_action).with(an_instance_of Hash) { 'Some crazy thing' }
-        Kul::FrameworkFactory.should_receive(:create_controller).with('foo', 'bar') { controller }
-        test = Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'bar', 'action' => 'some_action'
-        test.should == 'Some crazy thing'
+    context 'when the controller module exists' do
+      module Foo
+        module Bar
+          def string_action
+            'this is a test'
+          end
+          def nil_action
+          end
+          def render_action
+            ResponseRenderTemplate.new({})
+          end
+        end
       end
+
+      it 'returns NotFound response when the method does not exist' do
+        Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
+        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'not_exist' } }
+        test = Kul::BaseServer.new.route_action request
+        test.should be_a ResponseNotFound
+      end
+
+      it 'returns Text response when a string comes back from the action' do
+        Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
+        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'string_action' } }
+        test = Kul::BaseServer.new.route_action request
+        test.should be_a ResponseText
+        test.text.should == 'this is a test'
+      end
+
+      it 'returns the response when a response comes back from the action' do
+        Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
+        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'render_action' } }
+        test = Kul::BaseServer.new.route_action request
+        test.should be_a ResponseRenderTemplate
+      end
+
+      it 'returns an error response when nil comes back from the action' do
+        Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
+        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'nil_action' } }
+        test = Kul::BaseServer.new.route_action request
+        test.should be_a ResponseError
+      end
+
     end
+    #it 'raises NotFound when the controller does not exist' do
+    #  inside_test_server do
+    #    expect { Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'foo', 'action' => 'action' }.to raise_exception(Sinatra::NotFound)
+    #  end
+    #end
+    #
+    #it 'raises NotFound when there is no action method' do
+    #  controller = stub
+    #  controller.should_receive(:respond_to?).twice { false }
+    #  Kul::FrameworkFactory.should_receive(:create_controller).with('foo', 'bar') { controller }
+    #  expect { Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'bar', 'action' => 'not_exist' }.to raise_exception(Sinatra::NotFound)
+    #end
+    #
+    #context 'when process_action is not present' do
+    #  it 'sends the action directly to the class' do
+    #    inside_test_server do
+    #      test = Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'baz', 'action' => 'some_action'
+    #      test.should == 'Some crazy thing'
+    #    end
+    #  end
+    #end
+    #
+    #context 'when process_action is present' do
+    #  it 'forwards action request' do
+    #    controller = stub
+    #    controller.should_receive(:process_action).with(an_instance_of Hash) { 'Some crazy thing' }
+    #    Kul::FrameworkFactory.should_receive(:create_controller).with('foo', 'bar') { controller }
+    #    test = Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'bar', 'action' => 'some_action'
+    #    test.should == 'Some crazy thing'
+    #  end
+    #end
   end
 
 end
