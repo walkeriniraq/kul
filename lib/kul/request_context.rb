@@ -1,5 +1,5 @@
 class Kul::RequestContext
-  # TODO: convert this to a hash initializer - not sure if that will work with reader...
+  #17 - convert this to a hash initializer - not sure if that will work with reader...
   #include HashInitialize
 
   def initialize(server, app, params)

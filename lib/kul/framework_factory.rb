@@ -4,8 +4,8 @@ require 'kul/base_app'
 
 class Kul::FrameworkFactory
 
-  # TODO: Better class reloading - ?
-  # TODO: settings accessor
+  #14 - Better class reloading - ?
+  #13 - settings accessor
 
   def self.create_server
     self.new.create_server
