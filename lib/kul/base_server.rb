@@ -9,7 +9,7 @@ class Kul::BaseServer
 
   def route_path(path, params)
     app = Kul::FrameworkFactory.create_app(find_app path)
-    return Tilt.new("#{path}.html.erb").render(Kul::RequestContext.new(self, app, params)) if File.exists? "#{path}.html.erb"
+    return Tilt.new("#{path}.html.erb").render(Kul::RequestContext.new(server: self, app: app, params: params)) if File.exists? "#{path}.html.erb"
     raise Sinatra::NotFound
   end
 
