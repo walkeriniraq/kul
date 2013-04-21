@@ -11,14 +11,14 @@ class Kul::FrameworkFactory
     self.new.create_server
   end
 
-  def self.create_app(app_name)
-    self.new.create_app(app_name)
-  end
-
   def create_server
     load './server.rb' if File.exists? 'server.rb'
     return Object.const_get('Server'.classify).new if Object.const_defined? 'Server'.classify
     Kul::BaseServer.new
+  end
+
+  def self.create_app(app_name)
+    self.new.create_app(app_name)
   end
 
   def create_app(app_name)

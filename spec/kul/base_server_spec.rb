@@ -18,7 +18,7 @@ describe Kul::BaseServer do
 
     context 'request context provided to the template' do
       it 'includes the server' do
-        # given this particular set of objects, I'm not really sure how else to test this
+        # this test is a bit brute force
         inside_test_server do
           server = Kul::BaseServer.new
           server.instance_variable_set('@blah', 'foobar')
@@ -118,39 +118,6 @@ describe Kul::BaseServer do
         test = Kul::BaseServer.new.route_action request
         test.should be_a ResponseError
       end
-
     end
-    #it 'raises NotFound when the controller does not exist' do
-    #  inside_test_server do
-    #    expect { Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'foo', 'action' => 'action' }.to raise_exception(Sinatra::NotFound)
-    #  end
-    #end
-    #
-    #it 'raises NotFound when there is no action method' do
-    #  controller = stub
-    #  controller.should_receive(:respond_to?).twice { false }
-    #  Kul::FrameworkFactory.should_receive(:create_controller).with('foo', 'bar') { controller }
-    #  expect { Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'bar', 'action' => 'not_exist' }.to raise_exception(Sinatra::NotFound)
-    #end
-    #
-    #context 'when process_action is not present' do
-    #  it 'sends the action directly to the class' do
-    #    inside_test_server do
-    #      test = Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'baz', 'action' => 'some_action'
-    #      test.should == 'Some crazy thing'
-    #    end
-    #  end
-    #end
-    #
-    #context 'when process_action is present' do
-    #  it 'forwards action request' do
-    #    controller = stub
-    #    controller.should_receive(:process_action).with(an_instance_of Hash) { 'Some crazy thing' }
-    #    Kul::FrameworkFactory.should_receive(:create_controller).with('foo', 'bar') { controller }
-    #    test = Kul::BaseServer.new.route_action 'app' => 'foo', 'controller' => 'bar', 'action' => 'some_action'
-    #    test.should == 'Some crazy thing'
-    #  end
-    #end
   end
-
 end
