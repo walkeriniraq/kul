@@ -1,3 +1,4 @@
-require 'kul'
+#!/usr/bin/env ruby
+require 'kul/cli'
 
-Kul.run!
+Kul::CLI.start
