@@ -149,11 +149,20 @@ describe Kul::Router do
     context 'controller action' do
       it 'routes to the server and renders the response' do
         server = stub
-        server.should_receive(:route_action).with(an_instance_of(Hash)).and_return ResponseText.new(text: 'foo')
+        server.should_receive(:route_action).and_return ResponseText.new(text: 'foo')
         Kul::FrameworkFactory.should_receive(:create_server) { server }
         get '/foo/bar/baz'
         last_response.should be_ok
         last_response.body.should == "foo"
+      end
+
+      it 'passes a request context to the server' do
+        server = stub
+        server.should_receive(:route_action).with(an_instance_of(Kul::RequestContext)).and_return ResponseText.new(text: 'bar')
+        Kul::FrameworkFactory.should_receive(:create_server) { server }
+        get '/foo/bar/baz'
+        last_response.should be_ok
+        last_response.body.should == "bar"
       end
 
     end

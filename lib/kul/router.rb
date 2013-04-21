@@ -13,7 +13,7 @@ class Kul::Router < Sinatra::Base
   end
 
   get '/:app/:controller/:action' do
-    response = Kul::FrameworkFactory.create_server.route_action params: params
+    response = Kul::FrameworkFactory.create_server.route_action Kul::RequestContext.new(params: params)
     response.render
   end
 

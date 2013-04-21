@@ -18,7 +18,7 @@ class Kul::BaseServer
   end
 
   def route_action(request)
-    route_action_specific request, request[:params]['app'], request[:params]['controller'], request[:params]['action']
+    route_action_specific request, request.params['app'], request.params['controller'], request.params['action']
   end
 
   private

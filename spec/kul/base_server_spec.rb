@@ -61,7 +61,7 @@ describe Kul::BaseServer do
       it 'returns a NotFound response when there is no template' do
         inside_test_server do
           Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'not_exist').once.and_return nil
-          request = { params: { 'app' => 'foo', 'controller' => 'not_exist', 'action' => 'action' } }
+          request = Kul::RequestContext.new params: { 'app' => 'foo', 'controller' => 'not_exist', 'action' => 'action' }
           test = Kul::BaseServer.new.route_action request
           test.should be_a ResponseNotFound
         end
@@ -70,7 +70,7 @@ describe Kul::BaseServer do
       it 'renders the template when it exists' do
         inside_test_server do
           Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return nil
-          request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'action' } }
+          request = Kul::RequestContext.new params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'action' }
           test = Kul::BaseServer.new.route_action request
           test.should be_a ResponseRenderTemplate
         end
@@ -92,14 +92,14 @@ describe Kul::BaseServer do
 
       it 'returns NotFound response when the method does not exist' do
         Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
-        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'not_exist' } }
+        request = Kul::RequestContext.new params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'not_exist' }
         test = Kul::BaseServer.new.route_action request
         test.should be_a ResponseNotFound
       end
 
       it 'returns Text response when a string comes back from the action' do
         Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
-        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'string_action' } }
+        request = Kul::RequestContext.new params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'string_action' }
         test = Kul::BaseServer.new.route_action request
         test.should be_a ResponseText
         test.text.should == 'this is a test'
@@ -107,14 +107,14 @@ describe Kul::BaseServer do
 
       it 'returns the response when a response comes back from the action' do
         Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
-        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'render_action' } }
+        request = Kul::RequestContext.new params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'render_action' }
         test = Kul::BaseServer.new.route_action request
         test.should be_a ResponseRenderTemplate
       end
 
       it 'returns an error response when nil comes back from the action' do
         Kul::FrameworkFactory.should_receive(:find_module).with('foo', 'bar').once.and_return Foo::Bar
-        request = { params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'nil_action' } }
+        request = Kul::RequestContext.new params: { 'app' => 'foo', 'controller' => 'bar', 'action' => 'nil_action' }
         test = Kul::BaseServer.new.route_action request
         test.should be_a ResponseError
       end
