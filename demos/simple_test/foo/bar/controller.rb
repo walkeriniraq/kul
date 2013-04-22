@@ -1,8 +1,3 @@
-class Stuff
-  include HashInitialize
-  attr_accessor :thing, :other_thing
-end
-
 module Foo
   module Bar
     def test

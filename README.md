@@ -1,3 +1,7 @@
+[![Gem Version](https://badge.fury.io/rb/kul.png)](http://badge.fury.io/rb/kul)
+[![Dependency Status](https://gemnasium.com/walkeriniraq/kul.png)](https://gemnasium.com/walkeriniraq/kul)
+[![Code Climate](https://codeclimate.com/github/walkeriniraq/kul.png)](https://codeclimate.com/github/walkeriniraq/kul)
+
 Kul
 ===
 (pronounced "Cool")
@@ -10,6 +14,8 @@ like .JSPs with the power of Rails. It should be so easy to use that it can be a
 people who don't know ruby, web development, or (maybe) even programming!
 
 It is a work in progress, but feel free to check out and mess with it if you like.
+
+The [wiki] has all the information on how to use Kul.
 
 Planning and requirements
 -------------------------
@@ -24,19 +30,3 @@ Kul is designed to be very agile. In the old days a web page was just an HTML fi
 to make web development that simple. Create a server and serve up some erbs. Add a folder and you have implicit routing
 to the files there. Turn that folder into an application by adding a single ruby file. Add a folder for application-specific
 implicit routing. And then add a controller to that folder for full MVC architecture.
-
-Near-term features:
-x Rendering of .html.erb files as html files
-x Compiling .js.coffee as javascript
-x Compiling .css.scss as CSS
-- Server / Application / Controller base classes and defaults
-x Implicit routing to templates and actions
-x "gem install kul" and "kul" should get the server running
-- Explicit routing paths
-x Implicit routing of index.html
-- config file (auto-reloading? would be awesome)
-- Auto-loading (and reloading) of model / lib folders in server and app
-- ?
-
-Long-term features:
-- Simple SQL database API
