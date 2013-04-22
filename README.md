@@ -15,7 +15,7 @@ people who don't know ruby, web development, or (maybe) even programming!
 
 It is a work in progress, but feel free to check out and mess with it if you like.
 
-The [wiki] has all the information on how to use Kul.
+The [wiki][] has all the information on how to use Kul.
 
 Planning and requirements
 -------------------------
