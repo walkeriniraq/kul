@@ -28,9 +28,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 2.11'
   spec.add_development_dependency 'awesome_print', '~> 1.1'
   spec.add_development_dependency 'bundler', '~> 1.3'
-  spec.add_development_dependency 'rake', '~> 1.5.2'
+  spec.add_development_dependency 'rake', '~> 10.0.4'
   spec.add_development_dependency 'rack-test', '~> 0.6.2'
-  spec.add_development_dependency 'coveralls', '0.6.6'
+  spec.add_development_dependency 'coveralls', '~> 0.6.6'
 
   spec.executables << 'kul'
 end
