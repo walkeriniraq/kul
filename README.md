@@ -1,6 +1,8 @@
 [![Gem Version](https://badge.fury.io/rb/kul.png)](http://badge.fury.io/rb/kul)
+[![Build Status](https://travis-ci.org/walkeriniraq/kul.png?branch=master)](https://travis-ci.org/walkeriniraq/kul)
 [![Dependency Status](https://gemnasium.com/walkeriniraq/kul.png)](https://gemnasium.com/walkeriniraq/kul)
 [![Code Climate](https://codeclimate.com/github/walkeriniraq/kul.png)](https://codeclimate.com/github/walkeriniraq/kul)
+[![Coverage Status](https://coveralls.io/repos/walkeriniraq/kul/badge.png?branch=master)](https://coveralls.io/r/walkeriniraq/kul)
 
 Kul
 ===

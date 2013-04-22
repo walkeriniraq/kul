@@ -8,6 +8,9 @@ require 'test_app_helper'
 
 set :environment, :test
 
+require 'coveralls'
+Coveralls.wear!
+
 RSpec.configure do |config|
   config.include TestAppHelper
 end
