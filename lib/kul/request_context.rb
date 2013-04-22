@@ -1,4 +1,4 @@
-require 'kul\hash_initialize'
+require 'kul/hash_initialize'
 
 class Kul::RequestContext
   include HashInitialize
