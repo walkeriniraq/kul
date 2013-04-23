@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = %w(lib)
 
   spec.add_runtime_dependency 'sinatra', '~> 1.4.2'
-  spec.add_runtime_dependency 'coffee-script', '2.2'
+  spec.add_runtime_dependency 'coffee-script', '~> 2.2'
   spec.add_runtime_dependency 'sass', '~> 3.2.7'
   spec.add_runtime_dependency 'thor', '~> 0.18.1'
   spec.add_development_dependency 'rspec', '~> 2.11'
