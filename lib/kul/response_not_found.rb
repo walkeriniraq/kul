@@ -19,7 +19,11 @@ class ResponseNotFound < Kul::Response
     </html>
   END_HTML
 
-  def render
-    Rack::Response.new HTML, 404
+  def status
+    404
+  end
+
+  def body
+    HTML
   end
 end

@@ -9,36 +9,37 @@ class Kul::Router < Sinatra::Base
   end
 
   get '/*.:extension' do
-    try_render params[:splat].first, params[:extension] or not_found
+    try_render params[:splat].first, params[:extension] or ResponseNotFound.new.render
   end
 
   get '/:app/:controller/:action' do
-    response = Kul::FrameworkFactory.create_server.route_action Kul::RequestContext.new(params: params)
-    response.render
+    Kul::FrameworkFactory.create_server.route_action(Kul::RequestContext.new(params: params)).render
   end
 
   get '/' do
-    try_render 'index', 'html' or not_found
+    try_render 'index', 'html' or ResponseNotFound.new.render
   end
 
   get '/*' do
-    try_render "#{params[:splat].first.to_s}/index", 'html'
-    not_found
+    try_render "#{params[:splat].first.to_s}/index", 'html' or ResponseNotFound.new.render
   end
 
   def try_render(file_path, extension)
     return unless settings.extensions.include? extension
     path = Pathname.new("#{file_path}.#{extension}")
     send_file path.to_s if path.exist?
-    case extension
-    when 'css'
-      return Tilt.new("#{file_path}.css.scss").render if File.exists? "#{file_path}.css.scss"
-    when 'js'
-      return Tilt.new("#{file_path}.js.coffee").render if File.exists? "#{file_path}.js.coffee"
-    when 'html'
-      return Kul::FrameworkFactory.create_server.route_path file_path, params
-    end
-    nil
+    return case extension
+             when 'css'
+               render_if "#{file_path}.css.scss"
+             when 'js'
+               render_if "#{file_path}.js.coffee"
+             when 'html'
+               Kul::FrameworkFactory.create_server.route_path file_path, params
+           end
+  end
+
+  def render_if(path)
+    Tilt.new(path).render if File.exists? path
   end
 
 end
