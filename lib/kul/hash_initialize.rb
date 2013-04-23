@@ -1,5 +1,5 @@
 module HashInitialize
-  def initialize(opts)
+  def initialize(opts = {})
     opts.each do |k, v|
       if respond_to? k.to_s
         # this lets us initialize classes with attr_reader
