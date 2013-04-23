@@ -117,6 +117,26 @@ describe Kul::Router do
         end
       end
 
+      it 'routes to the server if the root is specified but no index file exists' do
+        test_server_context('special_test_server') do
+          get '/'
+          last_response.should be_ok
+          last_response.body.should == 'This is my test'
+        end
+      end
+
+      it 'routes to the index.html if a folder is specified but no index file exists' do
+        test_server_context('special_test_server') do
+          get '/foo'
+          last_response.should be_ok
+          last_response.body.should == 'This is my other test'
+        end
+      end
+
+      it 'routes to the server in the public folder if html does not exist'
+
+      it 'routes to the server in the views folder if html does not exist'
+
       it 'routes to the index.html for the root' do
         inside_test_server do
           get '/'
@@ -132,17 +152,6 @@ describe Kul::Router do
         get '/non_exist.html'
         last_response.should be_ok
         last_response.body.should == "foo"
-      end
-
-      it 'routes to the server when the request is for an erb' do
-        inside_test_server do
-          server = stub
-          server.should_receive(:route_path).with("foo/bar/test_erb", an_instance_of(Hash)) { "foo" }
-          Kul::FrameworkFactory.should_receive(:create_server) { server }
-          get '/foo/bar/test_erb.html'
-          last_response.should be_ok
-          last_response.body.should == "foo"
-        end
       end
     end
 
