@@ -133,9 +133,21 @@ describe Kul::Router do
         end
       end
 
-      it 'routes to the server in the public folder if html does not exist'
+      it 'routes to the server in the public folder if html does not exist' do
+        inside_test_server do
+          get '/public/test.html'
+          last_response.should be_ok
+          last_response.body.should == 'This is my test'
+        end
+      end
 
-      it 'routes to the server in the views folder if html does not exist'
+      it 'routes to the server in the views folder if html does not exist' do
+        inside_test_server do
+          get '/views/test.html'
+          last_response.should be_ok
+          last_response.body.should == 'This is my test'
+        end
+      end
 
       it 'routes to the index.html for the root' do
         inside_test_server do
