@@ -186,6 +186,10 @@ describe Kul::Router do
         last_response.body.should == "bar"
       end
 
+      it 'includes the verb that called the action' do
+        pending
+      end
+
     end
   end
 

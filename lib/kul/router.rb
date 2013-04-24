@@ -2,7 +2,7 @@ require 'kul/framework_factory'
 require 'sass'
 
 class Kul::Router < Sinatra::Base
-  set :extensions, ['html', 'js', 'css']
+  set :extension_includes, ['html', 'js', 'css']
 
   get '/favicon.ico' do
     send_file "favicon.ico"
@@ -25,7 +25,7 @@ class Kul::Router < Sinatra::Base
   end
 
   def try_render(file_path, extension)
-    return unless settings.extensions.include? extension
+    return unless settings.extension_includes.include? extension
     path = Pathname.new("#{file_path}.#{extension}")
     send_file path.to_s if path.exist?
     return case extension
