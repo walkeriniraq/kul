@@ -1,4 +1,5 @@
 require 'kul/framework_factory'
+require 'kul/route_listing'
 require 'sass'
 
 class Kul::Router < Sinatra::Base

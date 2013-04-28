@@ -9,5 +9,7 @@ module Foo
       @other_thing = 'this is another cool thing!'
       render_template 'foo/bar/test.html.erb'
     end
+
+
   end
 end

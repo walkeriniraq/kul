@@ -186,10 +186,11 @@ describe Kul::Router do
         last_response.body.should == "bar"
       end
 
-      it 'includes the verb that called the action' do
+      it 'passes GET as the verb when it is called as get' do
         pending
       end
 
+      it 'passes POST as the verb when it is called as post'
     end
   end
 
