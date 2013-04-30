@@ -8,9 +8,13 @@ class Kul::RouteListing
 
   def list_routes(path = '.')
     path = Pathname.new(path)
-    routes = path.children.reject { |c| c.directory? }.map { |x| file_routes x.to_s }.flatten.sort!
+    routes = list_routes_in_path(path)
     routes += path.children.select { |c| c.directory? }.map { |x| list_routes x }
     routes
+  end
+
+  def list_routes_in_path(path)
+    path.children.reject { |c| c.directory? }.map { |x| file_routes x.to_s }.flatten.sort!
   end
 
   def file_routes(file)

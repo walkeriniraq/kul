@@ -16,4 +16,5 @@ module Kul
 end
 
 require 'kul/router'
+require 'kul/actionize'
 require 'kul/version'
