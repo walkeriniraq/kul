@@ -16,7 +16,7 @@ describe Kul::Actionize do
       module EmptyActionTest2
         actionize!
       end
-      EmptyActionTest2.action_exists?(:foo).should be_false
+      EmptyActionTest2.action_exists?(:foo, :GET).should be_false
     end
 
   end
@@ -35,11 +35,11 @@ describe Kul::Actionize do
     end
 
     it 'indicates that actions exist' do
-      ActionTest.action_exists?('foo').should be_true
+      ActionTest.action_exists?('foo', :GET).should be_true
     end
 
     it 'indicates that actions do not exist' do
-      ActionTest.action_exists?('bar').should be_false
+      ActionTest.action_exists?('bar', :GET).should be_false
     end
 
     describe '#list_actions' do
@@ -49,46 +49,77 @@ describe Kul::Actionize do
     end
 
     it 'creates get methods with the GET verb' do
-      test = ActionTest.list_actions[:foo]
+      test = ActionTest.list_actions[:foo][:GET]
       test.should be
-      test[:verb].should == :GET
-    end
-
-    it 'creates HEAD methods for the GET methods' do
-      pending
     end
 
     it 'can have its methods executed' do
       instance = {}
-      test = ActionTest.execute_action instance, 'foo'
+      test = ActionTest.execute_action instance, 'foo', :GET
       test.should == 'bar'
     end
 
     it 'executes in the context of the instance' do
       instance = { foo: 'baz' }
-      test = ActionTest.execute_action instance, 'baz'
+      test = ActionTest.execute_action instance, 'baz', :GET
       test.should == 'baz'
     end
   end
 
-  it 'adds POST actions' do
-    module PostActionTest
+  describe 'various action verb methods' do
+    module VerbActionTest
       actionize!
       post 'foo' do
         'bar'
       end
+      delete 'foo' do
+        'baz'
+      end
+      put 'bar' do
+        'foo'
+      end
+      head 'baz' do
+        'blah'
+      end
+      options 'yay' do
+        'done'
+      end
     end
-    PostActionTest.action_exists?('foo').should be_true
-    PostActionTest.list_actions[:foo].should be
-    PostActionTest.list_actions[:foo][:verb].should == :POST
-    instance = {}
-    test = PostActionTest.execute_action instance, 'foo'
-    test.should == 'bar'
+
+    it 'adds POST actions' do
+      VerbActionTest.action_exists?('foo', :POST).should be_true
+      VerbActionTest.list_actions[:foo][:POST].should be
+      instance = {}
+      test = VerbActionTest.execute_action instance, 'foo', :POST
+      test.should == 'bar'
+    end
+    it 'adds DELETE actions' do
+      VerbActionTest.action_exists?('foo', :DELETE).should be_true
+      VerbActionTest.list_actions[:foo][:DELETE].should be
+      instance = {}
+      test = VerbActionTest.execute_action instance, 'foo', :DELETE
+      test.should == 'baz'
+    end
+    it 'adds PUT actions' do
+      VerbActionTest.action_exists?('bar', :PUT).should be_true
+      VerbActionTest.list_actions[:bar][:PUT].should be
+      instance = {}
+      test = VerbActionTest.execute_action instance, 'bar', :PUT
+      test.should == 'foo'
+    end
+    it 'adds HEAD actions' do
+      VerbActionTest.action_exists?('baz', :HEAD).should be_true
+      VerbActionTest.list_actions[:baz][:HEAD].should be
+      instance = {}
+      test = VerbActionTest.execute_action instance, 'baz', :HEAD
+      test.should == 'blah'
+    end
+    it 'adds OPTIONS actions' do
+      VerbActionTest.action_exists?('yay', :OPTIONS).should be_true
+      VerbActionTest.list_actions[:yay][:OPTIONS].should be
+      instance = {}
+      test = VerbActionTest.execute_action instance, 'yay', :OPTIONS
+      test.should == 'done'
+    end
   end
-
-  it 'adds DELETE actions'
-  it 'adds PUT actions'
-  it 'adds HEAD actions'
-  it 'adds OPTIONS actions'
-
 end
