@@ -2,7 +2,9 @@ require 'kul/framework_factory'
 require 'kul/route_listing'
 require 'sass'
 
-class Kul::Router < Sinatra::Base
+class Kul::RequestProcessor < Sinatra::Base
+  # TODO:  break this up into two classes - one that encapsulates the request into a RequestContext, and
+  # one that actually routes the request properly
   set :extension_includes, ['html', 'js', 'css']
 
   get '/favicon.ico' do

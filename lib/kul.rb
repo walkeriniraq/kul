@@ -11,10 +11,10 @@ module Kul
   def Kul.run!
     puts "Kul framework hanging out. Version: #{Kul::VERSION}"
     # TODO: figure out some way of getting the config and then set the routing options
-    Kul::Router.run!
+    Kul::RequestProcessor.run!
   end
 end
 
-require 'kul/router'
+require 'kul/request_processor'
 require 'kul/actionize'
 require 'kul/version'

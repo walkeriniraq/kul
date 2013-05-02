@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Kul::Router do
+describe Kul::RequestProcessor do
   include Rack::Test::Methods
 
   def app
-    Kul::Router.new
+    Kul::RequestProcessor.new
   end
 
   context 'explicit routing' do
