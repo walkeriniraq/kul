@@ -1,0 +1,3 @@
+class Kul::Router
+
+end

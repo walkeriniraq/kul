@@ -2,9 +2,8 @@ require 'kul/framework_factory'
 require 'kul/route_listing'
 require 'sass'
 
+# this class handles the sinatra request and builds the request context
 class Kul::RequestProcessor < Sinatra::Base
-  # TODO:  break this up into two classes - one that encapsulates the request into a RequestContext, and
-  # one that actually routes the request properly
   set :extension_includes, ['html', 'js', 'css']
 
   get '/favicon.ico' do
@@ -12,7 +11,8 @@ class Kul::RequestProcessor < Sinatra::Base
   end
 
   get '/*.:extension' do
-    try_render params[:splat].first, params[:extension] or ResponseNotFound.new.render
+    puts params.to_s
+    Kul::RequestContext.new :path => params[:splat].first, :extension => params[:extension], :params => params
   end
 
   get '/:app/:controller/:action' do
