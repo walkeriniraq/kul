@@ -286,6 +286,19 @@ describe Kul::RequestHandler do
       server.around_filters = ['foo']
       expect { server.run_around_filters 'bar' }.to raise_error('Invalid filter type passed in.')
     end
+    it 'passes an error up the stack' do
+      class TestExceptionHandler
+        attr_accessor :before_filters, :after_filters, :around_filters
+        include Kul::RequestHandler
+        def request_handler(request)
+          raise 'test error'
+        end
+      end
+
+      server = TestExceptionHandler.new
+      server.around_filters = [TestAroundFilterOne.new]
+      expect { server.run_around_filters 'bar' }.to raise_error('test error')
+    end
     it 'takes a lambda for the method' do
       server = TestRequestHandler.new
       server.around_filters = [TestAroundFilterOne.new]

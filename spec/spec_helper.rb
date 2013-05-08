@@ -1,3 +1,5 @@
+ENV['RACK_ENV']='test'
+
 require 'coveralls'
 Coveralls.wear!
 
@@ -7,6 +9,7 @@ require 'sinatra'
 require 'rack/test'
 require 'rspec'
 require 'test_app_helper'
+
 
 # require all of the rspec helpers
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}

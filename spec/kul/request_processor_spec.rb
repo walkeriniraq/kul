@@ -62,7 +62,7 @@ describe Kul::RequestProcessor do
     request_string = '/?foo=bar'
     { path: 'index', extension: 'html', params: { 'foo' => 'bar'} }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
@@ -72,7 +72,7 @@ describe Kul::RequestProcessor do
     request_string = '/foo?bar=baz'
     { app: 'foo', path: 'index', extension: 'html' }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
@@ -82,7 +82,7 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar.html?foo=bar&bar=baz'
     { app: 'foo', path: 'bar', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
@@ -92,7 +92,7 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar?foo=bar&bar=baz'
     { app: 'foo', path: 'bar/index', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
@@ -102,7 +102,7 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz?foo=bar&bar=baz'
     { app: 'foo', controller: 'bar', action: 'baz', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
@@ -112,7 +112,7 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz.html?foo=bar&bar=baz'
     { app: 'foo', controller: 'bar', action: 'baz', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
@@ -122,7 +122,7 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz/bat?foo=bar&bar=baz'
     { app: 'foo', path: 'bar/baz/bat/index', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
@@ -132,7 +132,7 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz/bat.html?foo=bar&bar=baz'
     { app: 'foo', path: 'bar/baz/bat', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestContext.should_receive(:new).with(hash_containing(key => value))
+        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
