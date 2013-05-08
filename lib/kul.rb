@@ -22,6 +22,8 @@ require 'kul/version'
 # temporary includes
 require 'kul/response_not_found'
 require 'kul/response_render_template'
+require 'kul/response_render_file'
 require 'kul/response_text'
 require 'kul/response_error'
 require 'kul/route_listing'
+require 'kul/router'

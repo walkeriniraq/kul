@@ -10,11 +10,16 @@ describe Kul::BaseApp do
     end
   end
 
+  describe '#construct_pathname' do
+    context 'when the app pathname is empty' do
+      it 'returns the path and extension'
+    end
+    it 'returns the app, path, and extension'
+  end
+
   describe '#request_handler_method' do
     context 'the request has a controller arg' do
-      context 'the controller and action exist' do
-        it 'return the response from the action'
-      end
+      it 'returns the response from the action'
       context 'the controller does not exist' do
         it_behaves_like 'controller or action does not exist'
       end
@@ -23,13 +28,79 @@ describe Kul::BaseApp do
       end
     end
     context 'no controller arg' do
-      context 'when the file exists' do
-        it 'calls route_file with the file path'
-        it 'adds itself to the request context'
-        it 'returns the result'
+      it 'returns a render file response' do
+        inside_test_server do
+          request = Kul::RequestContext.new :path => 'index', :extension => 'html'
+          test = Kul::BaseApp.new.request_handler(request)
+          test.should be_a ResponseRenderFile
+        end
+      end
+      it 'has the name of the file to render' do
+        inside_test_server do
+          request = Kul::RequestContext.new :path => 'index', :extension => 'html'
+          test = Kul::BaseApp.new.request_handler(request)
+          test.file.should == 'index.html'
+        end
       end
       context 'when the file does not exist' do
-        it 'returns 404'
+        it 'returns 404' do
+          inside_test_server do
+            request = Kul::RequestContext.new :path => 'not_exist', :extension => 'html'
+            test = Kul::BaseApp.new.request_handler(request)
+            test.should be_a ResponseNotFound
+          end
+        end
+      end
+      context 'when the extension is not in the router' do
+        it 'returns 404' do
+          inside_test_server do
+            router = double(:handle_extension? => false)
+            request = Kul::RequestContext.new :path => 'server', :extension => 'rb'
+            test = Kul::BaseApp.new(router: router).request_handler(request)
+            test.should be_a ResponseNotFound
+          end
+        end
+      end
+      context 'when given a list of routing instructions' do
+        let(:router) do
+          double(:handle_extension? => true,
+                 :routing => [{extension: 'html.erb', instruction: :template},
+                              {extension: 'html', instruction: :file}])
+        end
+        it 'returns a render template response' do
+          inside_test_server do
+            request = Kul::RequestContext.new :path => 'views/test', :extension => 'html'
+            test = Kul::BaseApp.new(router: router).request_handler(request)
+            test.should be_a ResponseRenderTemplate
+          end
+        end
+        it 'template response has the correct filename' do
+          inside_test_server do
+            request = Kul::RequestContext.new :path => 'views/test', :extension => 'html'
+            test = Kul::BaseApp.new(router: router).request_handler(request)
+            test.file.should == 'views/test.html.erb'
+          end
+        end
+        it 'returns a render file response' do
+          inside_test_server do
+            request = Kul::RequestContext.new :path => 'index', :extension => 'html'
+            test = Kul::BaseApp.new(router: router).request_handler(request)
+            test.should be_a ResponseRenderFile
+          end
+        end
+        it 'file response has the correct filename' do
+          inside_test_server do
+            request = Kul::RequestContext.new :path => 'index', :extension => 'html'
+            test = Kul::BaseApp.new(router: router).request_handler(request)
+            test.file.should == 'index.html'
+          end
+        end
+      end
+      context 'when there is a custom routing instruction' do
+        it 'returns the correct response'
+      end
+      context 'when there is an invalid routing instruction' do
+        it 'throws an error'
       end
     end
   end

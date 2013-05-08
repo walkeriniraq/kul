@@ -57,6 +57,7 @@ GEM
 
 PLATFORMS
   java
+  ruby
 
 DEPENDENCIES
   awesome_print (~> 1.1)

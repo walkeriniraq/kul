@@ -43,4 +43,12 @@ class Kul::FrameworkFactory
     parent_module.const_get controller_name.classify
   end
 
+  def self.create_router
+    self.new.create_router
+  end
+
+  def create_router
+    Kul::Router.new
+  end
+
 end

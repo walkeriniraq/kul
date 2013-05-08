@@ -6,6 +6,8 @@ describe Kul::BaseServer do
     it 'adds itself to the request' do
       request = Kul::RequestContext.new
       server = Kul::BaseServer.new
+      app = double :handle_request => 'foo'
+      Kul::FrameworkFactory.stub(:create_app) { app }
       request.should_receive(:server=).with(server)
       server.request_handler(request)
     end
