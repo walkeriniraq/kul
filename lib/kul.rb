@@ -18,3 +18,10 @@ end
 require 'kul/request_processor'
 require 'kul/actionize'
 require 'kul/version'
+
+# temporary includes
+require 'kul/response_not_found'
+require 'kul/response_render_template'
+require 'kul/response_text'
+require 'kul/response_error'
+require 'kul/route_listing'
