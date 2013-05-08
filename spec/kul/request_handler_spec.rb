@@ -5,8 +5,8 @@ describe Kul::RequestHandler do
   class TestRequestHandler
     attr_accessor :before_filters, :after_filters, :around_filters
     include Kul::RequestHandler
-    def request_handler_method
-      lambda { |request| request }
+    def request_handler(request)
+      request
     end
   end
 
@@ -27,7 +27,7 @@ describe Kul::RequestHandler do
     context 'when before_filters return nil' do
       it 'runs the around filters' do
         server = TestRequestHandler.new
-        server.should_receive(:run_around_filters).with('foo', an_instance_of(Proc))
+        server.should_receive(:run_around_filters).with('foo')
         server.handle_request('foo')
       end
       it 'runs the after filters' do
@@ -37,16 +37,16 @@ describe Kul::RequestHandler do
       end
       it 'returns the response from the around_filters' do
         server = TestRequestHandler.new
-        server.should_receive(:run_around_filters).with('foo', an_instance_of(Proc)).and_return 'bar'
+        server.should_receive(:run_around_filters).with('foo').and_return 'bar'
         test = server.handle_request('foo')
         test.should == 'bar'
       end
     end
-    it 'passes the request_handler_method method to the around filters' do
+    it 'runs the request_handler after the filters' do
       server = TestRequestHandler.new
-      server.should_receive(:run_around_filters) { |request, method| method.call(request) }
+      server.should_receive(:request_handler) { |request| 'foo' }
       test = server.handle_request({})
-      test.should == {}
+      test.should == 'foo'
     end
   end
 
@@ -250,7 +250,7 @@ describe Kul::RequestHandler do
       subject(:server) do
         server = TestRequestHandler.new
         server.around_filters = [TestAroundFilterOne.new, TestAroundFilterOne.new]
-        server.run_around_filters 'foo', proc { |context| context }
+        server.run_around_filters 'foo'
         server
       end
 
@@ -267,7 +267,7 @@ describe Kul::RequestHandler do
     it 'returns the response from the filter' do
       server = TestRequestHandler.new
       server.around_filters = [TestAroundFilterOne.new, TestAroundFilterOne.new]
-      test = server.run_around_filters 'foo', proc { |context| context }
+      test = server.run_around_filters 'foo'
       test.should == 'foo'
     end
     it 'runs a proc filter' do
@@ -278,19 +278,18 @@ describe Kul::RequestHandler do
       server = TestRequestHandler.new
       server.around_filters = [filter]
       request = { :run_count => 0 }
-      server.run_around_filters request, proc { |x| x }
+      server.run_around_filters request
       request[:run_count].should == 1
     end
     it 'throws an error when given an invalid filter' do
       server = TestRequestHandler.new
       server.around_filters = ['foo']
-      expect { server.run_around_filters 'bar', proc { |x| x } }.to raise_error('Invalid filter type passed in.')
+      expect { server.run_around_filters 'bar' }.to raise_error('Invalid filter type passed in.')
     end
     it 'takes a lambda for the method' do
       server = TestRequestHandler.new
       server.around_filters = [TestAroundFilterOne.new]
-      method = lambda { |x| x }
-      test = server.run_around_filters('foo', method)
+      test = server.run_around_filters('foo')
       test.should == 'foo'
     end
   end
