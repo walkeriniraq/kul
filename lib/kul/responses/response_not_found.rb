@@ -1,5 +1,3 @@
-require 'kul/response'
-
 class ResponseNotFound < Kul::Response
 
   HTML = <<-END_HTML

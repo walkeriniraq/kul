@@ -1,4 +1,4 @@
-module Kul::RequestHandler
+module Kul::Filters
   attr_accessor :before_filters, :after_filters, :around_filters
 
   def handle_request(request)

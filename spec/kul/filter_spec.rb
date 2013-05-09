@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Kul::RequestHandler do
+describe Kul::Filters do
   
   class TestRequestHandler
     attr_accessor :before_filters, :after_filters, :around_filters
-    include Kul::RequestHandler
+    include Kul::Filters
     def request_handler(request)
       request
     end
@@ -289,7 +289,7 @@ describe Kul::RequestHandler do
     it 'passes an error up the stack' do
       class TestExceptionHandler
         attr_accessor :before_filters, :after_filters, :around_filters
-        include Kul::RequestHandler
+        include Kul::Filters
         def request_handler(request)
           raise 'test error'
         end

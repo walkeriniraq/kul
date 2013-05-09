@@ -1,6 +1,35 @@
 require 'spec_helper'
 
-describe Kul::RequestProcessor do
+describe Kul::Processor do
+
+  context 'default router' do
+    context '#handle_extension?' do
+      it 'returns true for .js files' do
+        Kul::Router.new.handle_extension?('js').should be_true
+      end
+      it 'returns true for .html files' do
+        Kul::Router.new.handle_extension?('html').should be_true
+      end
+      it 'returns true for .css files' do
+        Kul::Router.new.handle_extension?('css').should be_true
+      end
+      it 'returns false for .rb files' do
+        Kul::Router.new.handle_extension?('rb').should be_false
+      end
+      it 'returns true for test.html files' do
+        Kul::Router.new.handle_extension?('test.html').should be_true
+      end
+    end
+    context '#routing' do
+      it 'returns file router for js files' do
+        Kul::Router.new.routing('js').should include({ instruction: :file })
+      end
+      it 'returns js routing for min.js files' do
+        Kul::Router.new.routing('min.js').should include({ instruction: :file })
+      end
+    end
+  end
+
   context 'explicit routing' do
   end
 

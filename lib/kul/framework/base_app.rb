@@ -1,38 +1,33 @@
-require 'pathname'
-require 'kul/framework_factory'
-require 'kul/request_handler'
-require 'kul/hash_initialize'
-
 class Kul::BaseApp
-  include Kul::RequestHandler
+  include Kul::Filters
   include HashInitialize
 
   attr_reader :pathname, :router
 
   def initialize(opts = {})
     initialize_values(opts)
-    @pathname ||= ''
     @router ||= Kul::FrameworkFactory.create_router
   end
 
   def request_handler(request)
     return ResponseNotFound.new unless @router.handle_extension? request.extension
     @router.routing(request.extension).each do |routing|
-      path = construct_pathname(request.path, routing[:extension])
+      path = construct_pathname(request.path, request.extension, routing[:extension])
       if Pathname.new(path).exist?
         case routing[:instruction]
           when :file
-            return ResponseRenderFile.new(file: path)
+            return ResponseRenderFile.new(request.processor, file: path)
           when :template
-            return ResponseRenderTemplate.new(file: path)
+            return ResponseRenderTemplate.new(file: path, context: request)
         end
       end
     end
     ResponseNotFound.new
   end
 
-  def construct_pathname(path, extension)
-    "#{path}.#{extension}"
+  def construct_pathname(path, extension, extra_extension)
+    return "#{path}.#{extension}#{extra_extension}" if @pathname.nil?
+    "#{@pathname}/#{path}.#{extension}#{extra_extension}"
   end
 
   #def self.app_request_handler(request)

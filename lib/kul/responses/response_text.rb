@@ -1,6 +1,3 @@
-require 'kul/response'
-require 'kul/hash_initialize'
-
 class ResponseText < Kul::Response
   include HashInitialize
 

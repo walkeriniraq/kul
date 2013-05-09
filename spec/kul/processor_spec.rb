@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Kul::RequestProcessor do
+describe Kul::Processor do
   include Rack::Test::Methods
 
   def app
-    Kul::RequestProcessor.new
+    Kul::Processor.new
   end
 
   context 'favicon.ico' do
@@ -30,7 +30,7 @@ describe Kul::RequestProcessor do
       server   = double(:handle_request => response)
       Kul::FrameworkFactory.stub(:create_server).and_return server
       Kul::RequestContext.should_receive(:new).with(:place => 'here', :time => 'now').and_return context
-      Kul::RequestProcessor.do_route :place => 'here', :time => 'now'
+      Kul::Processor.do_route :place => 'here', :time => 'now'
     end
     it 'passes the request context to a server' do
       server   = double
@@ -39,13 +39,13 @@ describe Kul::RequestProcessor do
       Kul::RequestContext.stub(:new).and_return context
       Kul::FrameworkFactory.stub(:create_server).and_return server
       server.should_receive(:handle_request).with(context).and_return response
-      Kul::RequestProcessor.do_route
+      Kul::Processor.do_route
     end
     it 'renders and returns the response from the server' do
       response = double(:render => 'this is my test')
       server   = double(:handle_request => response)
       Kul::FrameworkFactory.stub(:create_server).and_return server
-      test = Kul::RequestProcessor.do_route
+      test = Kul::Processor.do_route
       test.should == 'this is my test'
     end
     it 'returns response.to_s if response has no render method' do
@@ -53,7 +53,7 @@ describe Kul::RequestProcessor do
       server   = double(:handle_request => response)
       Kul::FrameworkFactory.stub(:create_server).and_return server
       response.should_receive(:to_s).and_return('this is a different test')
-      test = Kul::RequestProcessor.do_route
+      test = Kul::Processor.do_route
       test.should == 'this is a different test'
     end
   end
@@ -62,9 +62,13 @@ describe Kul::RequestProcessor do
     request_string = '/?foo=bar'
     { path: 'index', extension: 'html', params: { 'foo' => 'bar'} }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
     end
   end
 
@@ -72,9 +76,13 @@ describe Kul::RequestProcessor do
     request_string = '/foo?bar=baz'
     { app: 'foo', path: 'index', extension: 'html' }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
     end
   end
 
@@ -82,9 +90,13 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar.html?foo=bar&bar=baz'
     { app: 'foo', path: 'bar', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
     end
   end
 
@@ -92,9 +104,13 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar?foo=bar&bar=baz'
     { app: 'foo', path: 'bar/index', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
     end
   end
 
@@ -102,9 +118,13 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz?foo=bar&bar=baz'
     { app: 'foo', controller: 'bar', action: 'baz', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
     end
   end
 
@@ -112,9 +132,13 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz.html?foo=bar&bar=baz'
     { app: 'foo', controller: 'bar', action: 'baz', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+          Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
     end
   end
 
@@ -122,9 +146,13 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz/bat?foo=bar&bar=baz'
     { app: 'foo', path: 'bar/baz/bat/index', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
     end
   end
 
@@ -132,10 +160,27 @@ describe Kul::RequestProcessor do
     request_string = '/foo/bar/baz/bat.html?foo=bar&bar=baz'
     { app: 'foo', path: 'bar/baz/bat', extension: 'html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
       it "sets #{key} to #{value}" do
-        Kul::RequestProcessor.should_receive(:do_route).with(hash_containing(key => value))
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
         get request_string
       end
     end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
+    end
   end
 
+  context 'request with extra extensions on the file' do
+    request_string = '/foo/bar/baz/bat.test.html?foo=bar&bar=baz'
+    { app: 'foo', path: 'bar/baz/bat', extension: 'test.html', params: { 'foo' => 'bar', 'bar' => 'baz' } }.each do |key, value|
+      it "sets #{key} to #{value}" do
+        Kul::Processor.should_receive(:do_route).with(hash_containing(key => value))
+        get request_string
+      end
+    end
+    it 'includes the processor' do
+      Kul::Processor.should_receive(:do_route).with(hash_containing(:processor => be_a(Kul::Processor)))
+      get request_string
+    end
+  end
 end

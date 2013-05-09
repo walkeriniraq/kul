@@ -1,6 +1,3 @@
-require 'kul/response'
-require 'kul/hash_initialize'
-
 class ResponseError < Kul::Response
   include HashInitialize
 

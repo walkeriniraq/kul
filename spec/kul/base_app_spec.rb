@@ -12,9 +12,15 @@ describe Kul::BaseApp do
 
   describe '#construct_pathname' do
     context 'when the app pathname is empty' do
-      it 'returns the path and extension'
+      it 'returns the path and extension' do
+        test = Kul::BaseApp.new.construct_pathname('bar', 'html', '.erb')
+        test.should == 'bar.html.erb'
+      end
     end
-    it 'returns the app, path, and extension'
+    it 'returns the app, path, and extension' do
+      test = Kul::BaseApp.new(:pathname => 'foo').construct_pathname('bar', 'html', '.erb')
+      test.should == 'foo/bar.html.erb'
+    end
   end
 
   describe '#request_handler_method' do
@@ -64,8 +70,8 @@ describe Kul::BaseApp do
       context 'when given a list of routing instructions' do
         let(:router) do
           double(:handle_extension? => true,
-                 :routing => [{extension: 'html.erb', instruction: :template},
-                              {extension: 'html', instruction: :file}])
+                 :routing => [{extension: '.erb', instruction: :template},
+                              {instruction: :file}])
         end
         it 'returns a render template response' do
           inside_test_server do
@@ -93,6 +99,13 @@ describe Kul::BaseApp do
             request = Kul::RequestContext.new :path => 'index', :extension => 'html'
             test = Kul::BaseApp.new(router: router).request_handler(request)
             test.file.should == 'index.html'
+          end
+        end
+        it 'deals with files that have extra extensions' do
+          inside_test_server do
+            request = Kul::RequestContext.new :path => 'test', :extension => 'foo.html'
+            test = Kul::BaseApp.new(router: router).request_handler(request)
+            test.file.should == 'test.foo.html'
           end
         end
       end
