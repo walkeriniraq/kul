@@ -1,5 +1,4 @@
-class Kul::BaseApp
-  include Kul::Filters
+class Kul::BaseApp < Kul::Filter
   include HashInitialize
 
   attr_reader :pathname, :router

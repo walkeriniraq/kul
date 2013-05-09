@@ -36,7 +36,7 @@ class Kul::Processor < Sinatra::Base
 
   def self.do_route(context_params = {})
     context = Kul::RequestContext.new context_params
-    response = Kul::FrameworkFactory.create_server.handle_request context
+    response = Kul::FrameworkFactory.create_server.filter_request context
     return response.render if response.respond_to? :render
     response.to_s
   end

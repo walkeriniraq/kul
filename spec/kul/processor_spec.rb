@@ -27,7 +27,7 @@ describe Kul::Processor do
     it 'builds a request context with the context_params' do
       context  = double
       response = double(:render => '')
-      server   = double(:handle_request => response)
+      server   = double(:filter_request => response)
       Kul::FrameworkFactory.stub(:create_server).and_return server
       Kul::RequestContext.should_receive(:new).with(:place => 'here', :time => 'now').and_return context
       Kul::Processor.do_route :place => 'here', :time => 'now'
@@ -38,19 +38,19 @@ describe Kul::Processor do
       response = double(:render => '')
       Kul::RequestContext.stub(:new).and_return context
       Kul::FrameworkFactory.stub(:create_server).and_return server
-      server.should_receive(:handle_request).with(context).and_return response
+      server.should_receive(:filter_request).with(context).and_return response
       Kul::Processor.do_route
     end
     it 'renders and returns the response from the server' do
       response = double(:render => 'this is my test')
-      server   = double(:handle_request => response)
+      server   = double(:filter_request => response)
       Kul::FrameworkFactory.stub(:create_server).and_return server
       test = Kul::Processor.do_route
       test.should == 'this is my test'
     end
     it 'returns response.to_s if response has no render method' do
       response = double
-      server   = double(:handle_request => response)
+      server   = double(:filter_request => response)
       Kul::FrameworkFactory.stub(:create_server).and_return server
       response.should_receive(:to_s).and_return('this is a different test')
       test = Kul::Processor.do_route

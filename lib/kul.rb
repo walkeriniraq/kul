@@ -32,7 +32,7 @@ require 'kul/responses/response_render_template'
 require 'kul/responses/response_text'
 
 # framework includes
-require 'kul/framework/filters'
+require 'kul/framework/filter'
 require 'kul/framework/base_app'
 require 'kul/framework/base_server'
 require 'kul/framework/framework_factory'

@@ -1,10 +1,9 @@
 require 'spec_helper'
 
-describe Kul::Filters do
+describe Kul::Filter do
   
-  class TestRequestHandler
+  class TestRequestHandler < Kul::Filter
     attr_accessor :before_filters, :after_filters, :around_filters
-    include Kul::Filters
     def request_handler(request)
       request
     end
@@ -14,13 +13,13 @@ describe Kul::Filters do
     it 'runs the before filters' do
       server = TestRequestHandler.new
       server.should_receive(:run_before_filters).with({})
-      server.handle_request({})
+      server.filter_request({})
     end
     context 'when the before_filters return a response' do
       it 'returns the response' do
         server = TestRequestHandler.new
         server.stub(:run_before_filters => 'bar')
-        test = server.handle_request('foo')
+        test = server.filter_request('foo')
         test.should == 'bar'
       end
     end
@@ -28,24 +27,24 @@ describe Kul::Filters do
       it 'runs the around filters' do
         server = TestRequestHandler.new
         server.should_receive(:run_around_filters).with('foo')
-        server.handle_request('foo')
+        server.filter_request('foo')
       end
       it 'runs the after filters' do
         server = TestRequestHandler.new
         server.should_receive(:run_after_filters).with({}, {})
-        server.handle_request({})
+        server.filter_request({})
       end
       it 'returns the response from the around_filters' do
         server = TestRequestHandler.new
         server.should_receive(:run_around_filters).with('foo').and_return 'bar'
-        test = server.handle_request('foo')
+        test = server.filter_request('foo')
         test.should == 'bar'
       end
     end
     it 'runs the request_handler after the filters' do
       server = TestRequestHandler.new
       server.should_receive(:request_handler) { |request| 'foo' }
-      test = server.handle_request({})
+      test = server.filter_request({})
       test.should == 'foo'
     end
   end
@@ -287,9 +286,8 @@ describe Kul::Filters do
       expect { server.run_around_filters 'bar' }.to raise_error('Invalid filter type passed in.')
     end
     it 'passes an error up the stack' do
-      class TestExceptionHandler
+      class TestExceptionHandler < Kul::Filter
         attr_accessor :before_filters, :after_filters, :around_filters
-        include Kul::Filters
         def request_handler(request)
           raise 'test error'
         end

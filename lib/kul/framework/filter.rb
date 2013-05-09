@@ -1,7 +1,7 @@
-module Kul::Filters
+class Kul::Filter
   attr_accessor :before_filters, :after_filters, :around_filters
 
-  def handle_request(request)
+  def filter_request(request)
     response = run_before_filters(request)
     return response unless response.nil?
     response = run_around_filters(request)
