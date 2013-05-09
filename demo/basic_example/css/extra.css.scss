@@ -1,0 +1,19 @@
+$blue: #3bbfce;
+$margin: 16px;
+
+.box {
+  border-color: $blue;
+  background-color:
+    darken($blue, 9%);
+  height: 200px;
+  width: 200px;
+  margin: 10px;
+}
+
+.clicker {
+  cursor: pointer;
+  border: 2px outset lightgreen;
+  margin: 10px;
+  padding: 2px;
+  background-color: lightgreen;
+}
