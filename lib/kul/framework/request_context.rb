@@ -6,4 +6,9 @@ class Kul::RequestContext
   def render_template(filename)
     ResponseRenderTemplate.new file: filename, context: self
   end
+
+  def set_content_type
+    return if @processor.nil? || @extension.nil?
+    @processor.content_type @extension
+  end
 end

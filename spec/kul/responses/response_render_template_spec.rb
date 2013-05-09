@@ -4,8 +4,9 @@ describe ResponseRenderTemplate do
   context '#render' do
     it 'renders a template' do
       inside_test_server do
-        response = ResponseRenderTemplate.new file: 'foo/bar/test_erb.html.erb'
-        test     = response.render
+        context = double(:set_content_type => nil)
+        response = ResponseRenderTemplate.new file: 'foo/bar/test_erb.html.erb', context: context
+        test = response.render
         test.should == 'This is my test'
       end
     end
@@ -18,6 +19,7 @@ describe ResponseRenderTemplate do
         context = TestContext.new
         context.test = 'foo'
         context.other_test = 'bar'
+        context.should_receive(:set_content_type)
         response = ResponseRenderTemplate.new file: 'foo/context_test.html.erb', context: context
         test = response.render
         test.should == 'test: foo, other: bar'

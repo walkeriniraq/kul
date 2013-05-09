@@ -4,7 +4,7 @@ class ResponseRenderTemplate < Kul::Response
   attr_accessor :file, :context
 
   def render
-    context.processor.content_type context.extension
+    context.set_content_type
     Tilt.new(file).render(context)
   end
 
