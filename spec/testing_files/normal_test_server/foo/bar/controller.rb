@@ -1,7 +1,10 @@
 module Foo
   module Bar
-    def test_action
+    actionize!
+
+    get 'test_action' do
       'this is a nifty test action'
     end
+
   end
 end

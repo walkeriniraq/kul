@@ -16,12 +16,16 @@ end
 
 require 'pathname'
 
+# these includes are here because Intellij does not handle them
+# correctly when they are in the folders underneath this one.
+
 #general includes
 require 'kul/actionize'
 require 'kul/cli'
 require 'kul/route_listing'
 require 'kul/version'
 require 'kul/util/hash_initialize'
+require 'kul/util/path_parser'
 
 # response includes
 require 'kul/responses/response'

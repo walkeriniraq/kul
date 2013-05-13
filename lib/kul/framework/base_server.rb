@@ -1,9 +1,6 @@
-class Kul::BaseServer < Kul::Filter
+class Kul::BaseServer
+  include Kul::Filter
 
-  def request_handler(request)
-    request.server = self
-    app = Kul::FrameworkFactory.create_app(request.app)
-    app.filter_request(request)
-  end
+  attr_accessor :before_filters, :after_filters, :around_filters
 
 end

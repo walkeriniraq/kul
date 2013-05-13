@@ -3,17 +3,17 @@ class Kul::Router
   def initialize
     @extensions = {
         'html' => [
-            {extension: '.erb', instruction: :template},
-            {instruction: :file}
+            {:extra_extension =>  '.erb', :instruction => :template},
+            {:instruction => :file}
         ],
         'js' => [
-            {extension: '.coffee', instruction: :template},
-            {instruction: :file}
+            {:extra_extension =>  '.coffee', :instruction => :template},
+            {:instruction => :file}
         ],
         'css' => [
-            {extension: '.scss', instruction: :template},
-            {extension: '.sass', instruction: :template},
-            {instruction: :file}
+            {:extra_extension =>  '.scss', :instruction => :template},
+            {:extra_extension =>  '.sass', :instruction => :template},
+            {:instruction => :file}
         ]
     }
   end
@@ -23,8 +23,11 @@ class Kul::Router
     false
   end
 
-  def routing(extension)
-    @extensions.find { |key, value| return value if extension.end_with? key }
+  def routing(file_path, extension)
+    return unless handle_extension? extension
+    @extensions[extension].each do |value|
+      yield value[:instruction], "#{file_path}#{value[:extra_extension]}"
+    end
   end
 
 end

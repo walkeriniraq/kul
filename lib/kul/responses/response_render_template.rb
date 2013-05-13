@@ -1,10 +1,10 @@
 class ResponseRenderTemplate < Kul::Response
   include HashInitialize
 
-  attr_accessor :file, :context
+  attr_accessor :file, :context, :processor
 
   def render
-    context.set_content_type
+    processor.content_type context.extension
     Tilt.new(file).render(context)
   end
 

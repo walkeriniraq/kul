@@ -6,37 +6,9 @@ class Kul::Processor < Sinatra::Base
     send_file 'favicon.ico'
   end
 
-  get '/:app/:controller/:action.:extension' do
-    Kul::Processor.do_route processor: self, app: params[:app], controller: params[:controller], action: params[:action], extension: params[:extension], params: params
-  end
-
-  get '/:app/:controller/:action' do
-    Kul::Processor.do_route processor: self, app: params[:app], controller: params[:controller], action: params[:action], params: params
-  end
-
-  get '/:app/*.:extension' do |app, path, extension|
-    Kul::Processor.do_route processor: self, app: app, path: path, extension: extension, params: params
-  end
-
-  get '/:path.:extension' do
-    Kul::Processor.do_route processor: self, path: params[:path], extension: params[:extension], params: params
-  end
-
-  get '/' do
-    Kul::Processor.do_route processor: self, processor: self, path: 'index', extension: 'html', params: params
-  end
-
-  get '/:app' do
-    Kul::Processor.do_route processor: self, app: params[:app], path: 'index', extension: 'html', params: params
-  end
-
-  get '/:app/*' do |app, path|
-    Kul::Processor.do_route processor: self, app: app, path: "#{path}/index", extension: 'html', params: params
-  end
-
-  def self.do_route(context_params = {})
-    context = Kul::RequestContext.new context_params
-    response = Kul::FrameworkFactory.create_server.filter_request context
+  get '/*' do |path|
+    request = Kul::FrameworkFactory.create_request path: path, params: params, processor: self, verb: :GET
+    response = request.handle
     return response.render if response.respond_to? :render
     response.to_s
   end

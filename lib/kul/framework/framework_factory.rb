@@ -7,7 +7,6 @@ class Kul::FrameworkFactory
   def create_server
     load './server.rb' if File.exists? 'server.rb'
     return Object.const_get('Server'.classify).new if Object.const_defined? 'Server'.classify
-    puts 'creating base server'
     Kul::BaseServer.new
   end
 
@@ -19,9 +18,8 @@ class Kul::FrameworkFactory
     app_file = Pathname.new(Dir.getwd).join("#{app_name}/#{app_name}_app.rb")
     load(app_file.to_s) if app_file.exist?
     app_class = "#{app_name}_app".classify
-    return Object.const_get(app_class).new(:pathname => app_name) if Object.const_defined? app_class
-    puts 'creating base app'
-    Kul::BaseApp.new :pathname => app_name
+    return Object.const_get(app_class).new if Object.const_defined? app_class
+    Kul::BaseApp.new
   end
 
   def self.find_module(app_name, controller_name)
@@ -39,11 +37,11 @@ class Kul::FrameworkFactory
   end
 
   def self.create_router
-    self.new.create_router
+    Kul::Router.new
   end
 
-  def create_router
-    Kul::Router.new
+  def self.create_request(options)
+    Kul::RequestContext.new options
   end
 
 end
