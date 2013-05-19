@@ -3,7 +3,11 @@ require 'coffee-script'
 
 class String
   def classify
-    return self.split('_').collect(&:capitalize).join
+    split('_').collect(&:capitalize).join
+  end
+
+  def rsub(pattern, replacement)
+    reverse.sub(pattern.reverse, replacement.reverse).reverse
   end
 end
 
@@ -25,7 +29,7 @@ require 'kul/cli'
 require 'kul/route_listing'
 require 'kul/version'
 require 'kul/util/hash_initialize'
-require 'kul/util/path_parser'
+require 'kul/util/path'
 
 # response includes
 require 'kul/responses/response'
@@ -36,10 +40,11 @@ require 'kul/responses/response_render_template'
 require 'kul/responses/response_text'
 
 # framework includes
+require 'kul/framework/route'
 require 'kul/framework/filter'
 require 'kul/framework/base_app'
 require 'kul/framework/base_server'
 require 'kul/framework/framework_factory'
 require 'kul/framework/processor'
 require 'kul/framework/request_context'
-require 'kul/framework/router'
+require 'kul/framework/route_type_list'

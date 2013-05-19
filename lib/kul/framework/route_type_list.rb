@@ -1,4 +1,4 @@
-class Kul::Router
+class Kul::RouteTypeList
 
   def initialize
     @extensions = {
@@ -18,16 +18,27 @@ class Kul::Router
     }
   end
 
-  def handle_extension?(extension)
+  def add_route_type(extension, instruction)
+    @extensions[extension] = [] unless @extensions.has_key? extension
+    @extensions[extension] << instruction
+  end
+
+  def handle_type?(extension)
     @extensions.keys.each { |key| return true if extension.end_with? key }
     false
   end
 
-  def routing(file_path, extension)
-    return unless handle_extension? extension
-    @extensions[extension].each do |value|
-      yield value[:instruction], "#{file_path}#{value[:extra_extension]}"
+  def route_type_listing(route)
+    return unless handle_type? route.extension
+    @extensions[route.extension].each do |value|
+      yield value[:instruction], "#{route.file_path}#{value[:extra_extension]}"
     end
+  end
+
+  def valid_types
+    valid = {}
+    @extensions.each { |k, v| v.each { |x| x.has_key?(:extra_extension) ? valid["#{k}#{x[:extra_extension]}"] = k : valid[k] = k }}
+    valid
   end
 
 end

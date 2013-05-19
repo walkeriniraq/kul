@@ -10,7 +10,7 @@ class Kul::FrameworkFactory
     Kul::BaseServer.new
   end
 
-  def self.create_app(app_name)
+  def self.get_app(app_name)
     self.new.create_app(app_name)
   end
 
@@ -22,8 +22,13 @@ class Kul::FrameworkFactory
     Kul::BaseApp.new
   end
 
-  def self.find_module(app_name, controller_name)
-    self.new.find_module app_name, controller_name
+  #def self.get_controller(app_name, controller_name)
+  #  self.new.find_module app_name, controller_name
+  #end
+
+  def self.get_controller(path)
+    puts "#{path.app_name}, #{path.controller_name}"
+    self.new.find_module path.app_name, path.controller_name
   end
 
   def find_module(app_name, controller_name)
@@ -36,8 +41,8 @@ class Kul::FrameworkFactory
     parent_module.const_get controller_name.classify
   end
 
-  def self.create_router
-    Kul::Router.new
+  def self.get_route_type_list
+    Kul::RouteTypeList.new
   end
 
   def self.create_request(options)

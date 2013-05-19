@@ -2,51 +2,26 @@ require 'andand'
 
 class Kul::RequestContext
   include HashInitialize
-  include Kul::PathParser
 
   attr_reader :path, :params, :processor, :verb
 
-  def controller
-    if @controller.nil?
-      @controller = { value: Kul::FrameworkFactory.find_module(app_name, controller_name) }
-    end
-    @controller[:value]
-  end
-
-  def app
-    if @app.nil?
-      @app = { value: Kul::FrameworkFactory.create_app(app_name) }
-    end
-    @app[:value]
-  end
-
-  def server
-    if @server.nil?
-      @server = { value: Kul::FrameworkFactory.create_server }
-    end
-    @server[:value]
-  end
-
-  def has_action?
-    unless controller.nil?
-      return controller.respond_to?(:action_exists?) && controller.action_exists?(action_name, @verb)
-    end
-    false
+  def initialize(params = {})
+    initialize_values(params)
+    @route = Kul::Route.new(@verb, @path)
   end
 
   def handle
-    # server static routing
     # server filtering
     # app filtering
-    return render_action if has_action?
-    route
+    return render_action if @route.has_action?
+    route_to_file
   end
 
-  def route
-    puts "Kul: rendering path: #{file_path}"
-    router = Kul::FrameworkFactory.create_router
-    return ResponseNotFound.new unless router.handle_extension? extension
-    router.routing(file_path, extension) do |instruction, render_path|
+  def route_to_file
+    puts "Kul: routing to file from path: #{@route.file_path}"
+    route_type_list = Kul::FrameworkFactory.get_route_type_list
+    return ResponseNotFound.new unless route_type_list.handle_type? @route.extension
+    route_type_list.route_type_listing(@route) do |instruction, render_path|
       if Pathname.new(render_path).exist?
         case instruction
           when :file
@@ -59,6 +34,10 @@ class Kul::RequestContext
     ResponseNotFound.new
   end
 
+  def extension
+    @route.extension
+  end
+
   def render_file(filename)
     ResponseRenderFile.new processor, file: filename
   end
@@ -68,7 +47,7 @@ class Kul::RequestContext
   end
 
   def render_action
-    controller.execute_action(self, action_name, @verb)
+    @route.controller.execute_action(self, @route.action_name, @verb)
   end
 
 end

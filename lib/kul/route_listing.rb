@@ -1,9 +1,7 @@
 class Kul::RouteListing
 
   def initialize
-    @valid_extensions = %w(html js css)
-    @valid_process_extensions = %w(erb scss coffee)
-    @blocked_folders = []
+    @valid_extensions = Kul::FrameworkFactory.get_route_type_list.valid_types
   end
 
   def list_routes(path = '.')
@@ -14,27 +12,25 @@ class Kul::RouteListing
   end
 
   def list_routes_in_path(path)
-    path.children.reject { |c| c.directory? }.map { |x| file_routes x.to_s }.flatten.sort!
-  end
-
-  def file_routes(file)
-    path = Pathname.new(file)
-    routes = []
-    return routes if is_blocked file
-    extension = path.extname[1..-1]
-    routes << path.dirname.to_s if path.basename.to_s == 'index.html' && @valid_extensions.include?(extension)
-    routes << file if @valid_extensions.include? extension
-    routes += file_routes(file.chomp path.extname) if @valid_process_extensions.include? extension
+    routes = path.children.reject { |c| c.directory? }.map { |x| routes_from_file x.to_s }.flatten.sort!
+    kul_path = Kul::Path.new(path)
+    controller = Kul::FrameworkFactory.get_controller(kul_path)
+    routes += controller.action_paths unless controller.nil?
     routes
   end
 
-  def is_blocked(file)
-    @blocked_folders.any? { |x| file.start_with? x }
+  def routes_from_file(file)
+    path = Pathname.new(file)
+    routes = []
+    routes << path.dirname.to_s if path.basename.to_s == 'index.html' if @valid_extensions.has_key?('html')
+    if file.end_with? *@valid_extensions.keys
+      routes << path_for(file)
+    end
+    routes
   end
 
-  def block_folder(folder)
-    @blocked_folders << "/#{folder}"
+  def path_for(file)
+    @valid_extensions.each { |k, v| return file.rsub(k, v) if file.end_with? k }
   end
-
 
 end

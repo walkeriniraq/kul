@@ -35,20 +35,20 @@ describe Kul::FrameworkFactory do
   context '#find_module' do
     it 'returns nil if the controller file does not exist' do
       inside_empty_server do
-        test = Kul::FrameworkFactory.find_module 'test', 'more_test'
+        test = Kul::FrameworkFactory.get_controller Kul::Path.new('test/more_test')
         test.should be_nil
       end
     end
     it 'returns nil if the folder structure does not exist' do
       inside_empty_server do
-        test = Kul::FrameworkFactory.find_module 'foo', 'bar'
+        test = Kul::FrameworkFactory.get_controller Kul::Path.new('foo/bar')
         test.should be_nil
       end
     end
     
     it 'returns the module from the file if it exists' do
       inside_test_server do
-        test = Kul::FrameworkFactory.find_module 'foo', 'bar'
+        test = Kul::FrameworkFactory.get_controller Kul::Path.new('foo/bar')
         test.should be
         test.should be_a Module
         test.to_s.should == 'Foo::Bar'

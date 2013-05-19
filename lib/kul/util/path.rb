@@ -1,6 +1,10 @@
-module Kul::PathParser
+class Kul::Path
   APP_REGEX = %r|^\w*[/\?]|
   CONTROLLER_REGEX = %r|\w*/\w*[/\?]|
+
+  def initialize(path)
+    @path = path.to_s
+  end
 
   def app_name
     if @app_name.nil?
@@ -13,15 +17,9 @@ module Kul::PathParser
 
   def controller_name
     if @controller_name.nil?
-      name = @path[CONTROLLER_REGEX].andand[0..-2].andand.split('/').andand.at(1)
-      @controller_name = { value: name }
+      @controller_name = { value: get_controller_name }
     end
     @controller_name[:value]
-  end
-
-  def extension
-    return 'html' unless @path.include? '.'
-    @path.split('.').last.split('?').first
   end
 
   def action_name
@@ -29,6 +27,11 @@ module Kul::PathParser
       @action_name = { value: get_action_name }
     end
     @action_name[:value]
+  end
+
+  def extension
+    return 'html' unless @path.include? '.'
+    @path.split('.').last.split('?').first
   end
 
   def file_path
@@ -46,12 +49,26 @@ module Kul::PathParser
 
   private
 
-  def get_action_name
+  def get_controller_name
     parts = @path.split('/')
-    return if parts.count != 3
-    parts = parts[2].split('?')
-    return if parts[0].empty?
-    parts[0]
+    case parts.count
+      when 3
+        return parts[1]
+      when 2
+        parts = parts.last.split('?')
+        return parts[0] unless parts[0].empty? || parts[0].include?('.')
+    end
+    nil
+  end
+
+  def get_action_name
+    return nil if controller_name.nil?
+    parts = @path.split('/')
+    if parts.count == 3
+        parts = parts.last.split('?')
+        return parts[0] unless parts[0].empty? || parts[0].include?('.')
+    end
+    return 'index'
   end
 
 end

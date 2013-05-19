@@ -4,6 +4,11 @@ module Kul::Actionize
     @__actions__ ||= {}
   end
 
+  def action_paths
+    name = self.to_s.gsub('::', '/').downcase
+    @__actions__.map { |k, _| "#{name}/#{k}" }
+  end
+
   def action_exists?(action_name, verb)
     return false unless (@__actions__ ||= {}).include? action_name.to_sym
     (@__actions__[action_name.to_sym] ||= {}).include? verb
