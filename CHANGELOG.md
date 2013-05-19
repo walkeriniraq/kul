@@ -1,5 +1,6 @@
 ## 0.1.1
   - MVC lives again!
+  - Can make post actions
 
 ## 0.1.0
   - Complete refactor of framework
