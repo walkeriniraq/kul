@@ -6,7 +6,7 @@ module Kul::Actionize
 
   def action_paths
     name = self.to_s.gsub('::', '/').downcase
-    @__actions__.map { |k, _| "#{name}/#{k}" }
+    list_actions.map { |k, _| "#{name}/#{k}" }
   end
 
   def action_exists?(action_name, verb)
