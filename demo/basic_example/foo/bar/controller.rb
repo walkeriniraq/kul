@@ -1,15 +1,16 @@
 module Foo
   module Bar
-    def test
+    actionize!
+
+    get 'test' do
       'This is my test'
     end
 
-    def test_render
+    get 'test_render' do
       @thing = 'this is a cool thing!'
       @other_thing = 'this is another cool thing!'
       render_template 'foo/bar/test.html.erb'
     end
-
 
   end
 end

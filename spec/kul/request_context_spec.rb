@@ -99,4 +99,25 @@ describe Kul::RequestContext do
     end
   end
 
+  describe '#render_action' do
+    it 'returns the response from the action' do
+      inside_test_server do
+        request = Kul::RequestContext.new(path: 'foo/bar/test_action', verb: :GET)
+        request.render_action.should == 'this is a nifty test action'
+      end
+    end
+    it 'passes the context to the action' do
+      inside_test_server do
+        request = Kul::RequestContext.new(path: 'foo/bar/repeat_action', verb: :GET, params: { 'test' => 'a thing'})
+        request.render_action.should == 'The test value passed was: a thing'
+      end
+    end
+    it 'handles POST verbs' do
+      inside_test_server do
+        request = Kul::RequestContext.new(path: 'foo/bar/post_action', verb: :POST, params: { 'test' => 'a thing'})
+        request.render_action.should == 'The test value passed was: a thing'
+      end
+    end
+  end
+
 end

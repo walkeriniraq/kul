@@ -1,3 +1,6 @@
+## 0.1.1
+  - MVC lives again!
+
 ## 0.1.0
   - Complete refactor of framework
   - All request now generate a RequestContext and return a response

@@ -29,7 +29,7 @@ class Kul::RequestContext
 
   def has_action?
     unless controller.nil?
-      return true if controller.respond_to?(:action_exists?) && controller.action_exists?(action_name, @verb)
+      return controller.respond_to?(:action_exists?) && controller.action_exists?(action_name, @verb)
     end
     false
   end
@@ -38,7 +38,7 @@ class Kul::RequestContext
     # server static routing
     # server filtering
     # app filtering
-    return render_controller if has_action?
+    return render_action if has_action?
     route
   end
 
@@ -50,9 +50,9 @@ class Kul::RequestContext
       if Pathname.new(render_path).exist?
         case instruction
           when :file
-            return ResponseRenderFile.new(processor, file: render_path)
+            return render_file render_path
           when :template
-            return ResponseRenderTemplate.new(processor: processor, file: render_path, context: self)
+            return render_template render_path
         end
       end
     end
@@ -60,15 +60,15 @@ class Kul::RequestContext
   end
 
   def render_file(filename)
-    ResponseRenderFile.new self.processor, file: filename
+    ResponseRenderFile.new processor, file: filename
   end
 
   def render_template(filename)
     ResponseRenderTemplate.new processor: processor, file: filename, context: self
   end
 
-  def render_controller
-    # code here
+  def render_action
+    controller.execute_action(self, action_name, @verb)
   end
 
 end
