@@ -12,5 +12,13 @@ module Foo
       render_template 'foo/bar/test.html.erb'
     end
 
+    get 'echo' do
+      render_template 'foo/bar/echo.html.erb'
+    end
+
+    post 'echo' do
+      @params['input']
+    end
+
   end
 end

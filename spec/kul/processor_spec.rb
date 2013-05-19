@@ -33,4 +33,28 @@ describe Kul::Processor do
     end
   end
 
+  it 'makes POST actions work' do
+    Kul::FrameworkFactory.should_receive(:create_request) do |opts|
+      opts[:verb].should == :POST
+      Kul::RequestContext.new(opts)
+    end
+    post '/foo/bar/post_action?test=a%20test'
+  end
+
+  it 'makes PUT actions work' do
+    Kul::FrameworkFactory.should_receive(:create_request) do |opts|
+      opts[:verb].should == :PUT
+      Kul::RequestContext.new(opts)
+    end
+    put '/foo/bar/post_action?test=a%20test'
+  end
+
+  it 'makes DELETE actions work' do
+    Kul::FrameworkFactory.should_receive(:create_request) do |opts|
+      opts[:verb].should == :DELETE
+      Kul::RequestContext.new(opts)
+    end
+    delete '/foo/bar/post_action?test=a%20test'
+  end
+
 end
