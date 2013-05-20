@@ -10,6 +10,6 @@ class Kul::CLI < Thor
 
   desc 'routes', 'Lists all possible routes if the server were started in the current directory'
   def routes
-    Kul::RouteListing.new.list_routes.each { |x| puts x }
+    Kul::RouteListing.new.route_list
   end
 end

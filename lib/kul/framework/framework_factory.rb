@@ -27,7 +27,6 @@ class Kul::FrameworkFactory
   #end
 
   def self.get_controller(path)
-    puts "#{path.app_name}, #{path.controller_name}"
     self.new.find_module path.app_name, path.controller_name
   end
 

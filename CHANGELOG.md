@@ -1,6 +1,7 @@
 ## 0.1.1
   - MVC lives again!
   - Can make post actions
+  - Routes command will display the controller routes as well
 
 ## 0.1.0
   - Complete refactor of framework

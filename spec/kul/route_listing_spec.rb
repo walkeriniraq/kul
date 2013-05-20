@@ -41,6 +41,11 @@ describe Kul::RouteListing do
       test.should include '.'
       test.should include 'index.html'
     end
+    it 'includes both /foo and /foo/index.html' do
+      test = Kul::RouteListing.new.routes_from_file 'foo/index.html'
+      test.should include 'foo'
+      test.should include 'foo/index.html'
+    end
   end
   describe '#list_routes_in_path' do
     it 'returns the actions from the controller' do

@@ -4,6 +4,10 @@ class Kul::RouteListing
     @valid_extensions = Kul::FrameworkFactory.get_route_type_list.valid_types
   end
 
+  def route_list
+    list_routes.flatten.each { |x| puts x.to_s }
+  end
+
   def list_routes(path = '.')
     path = Pathname.new(path)
     routes = list_routes_in_path(path)
@@ -12,11 +16,11 @@ class Kul::RouteListing
   end
 
   def list_routes_in_path(path)
-    routes = path.children.reject { |c| c.directory? }.map { |x| routes_from_file x.to_s }.flatten.sort!
+    routes = path.children.reject { |c| c.directory? }.map { |x| routes_from_file x.to_s }
     kul_path = Kul::Path.new(path)
     controller = Kul::FrameworkFactory.get_controller(kul_path)
     routes += controller.action_paths unless controller.nil?
-    routes
+    routes.flatten.sort
   end
 
   def routes_from_file(file)
