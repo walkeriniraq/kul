@@ -19,7 +19,7 @@ class Kul::RouteListing
     routes = path.children.reject { |c| c.directory? }.map { |x| routes_from_file x.to_s }
     kul_path = Kul::Path.new(path)
     controller = Kul::FrameworkFactory.get_controller(kul_path)
-    routes += controller.action_paths unless controller.nil?
+    routes += controller.action_paths unless controller.nil? || !controller.respond_to?(:action_paths)
     routes.flatten.sort
   end
 

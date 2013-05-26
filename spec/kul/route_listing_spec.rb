@@ -57,6 +57,13 @@ describe Kul::RouteListing do
         test.should include 'foo/bar/post_action'
       end
     end
+    it 'does not error for a class without actionize' do
+      inside_test_server do
+        require './foo/baz/controller.rb'
+        test = Kul::RouteListing.new.list_routes_in_path Pathname.new('foo/baz')
+        test.should be
+      end
+    end
   end
 
   describe '#list_routes' do
