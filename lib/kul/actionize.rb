@@ -45,7 +45,8 @@ module Kul::Actionize
   def execute_action(instance, action_name, verb)
     action_name = action_name.to_sym
     raise 'Action does not exist: #{action_name}' unless action_exists?(action_name, verb)
-    instance.instance_eval &get_action(action_name, verb)
+    instance.define_singleton_method(action_name, &get_action(action_name, verb))
+    instance.send(action_name)
   end
 
   def add_action(verb, action_name, options, &block)

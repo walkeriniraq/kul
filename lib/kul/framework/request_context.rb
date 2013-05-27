@@ -3,7 +3,7 @@ require 'andand'
 class Kul::RequestContext
   include HashInitialize
 
-  attr_reader :path, :params, :processor, :verb
+  attr_reader :path, :params, :processor, :verb, :session
 
   def initialize(params = {})
     initialize_values(params)
@@ -18,7 +18,6 @@ class Kul::RequestContext
   end
 
   def route_to_file
-    puts "Kul: routing to file from path: #{@route.file_path}"
     route_type_list = Kul::FrameworkFactory.get_route_type_list
     return ResponseNotFound.new unless route_type_list.handle_type? @route.extension
     route_type_list.route_type_listing(@route) do |instruction, render_path|
@@ -39,11 +38,15 @@ class Kul::RequestContext
   end
 
   def render_file(filename)
-    ResponseRenderFile.new processor, file: filename
+    ResponseRenderFile.new processor: processor, file: filename
   end
 
   def render_template(filename)
-    ResponseRenderTemplate.new processor: processor, file: filename, context: self
+    ResponseRenderTemplate.new file: filename, context: self
+  end
+
+  def render_json(hash)
+    ResponseJson.new data: hash
   end
 
   def render_action

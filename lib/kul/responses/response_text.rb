@@ -3,6 +3,10 @@ class ResponseText < Kul::Response
 
   attr_accessor :text
 
+  def content_type
+    'text/plain'
+  end
+
   def render
     text
   end

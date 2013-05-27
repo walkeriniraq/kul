@@ -32,6 +32,16 @@ describe Kul::Actionize do
       get 'baz' do
         self[:foo]
       end
+
+      get 'test' do
+        return 'foo'
+      end
+    end
+
+    it 'has a value return properly' do
+      instance = {}
+      test = ActionTest.execute_action instance, 'test', :GET
+      test.should == 'foo'
     end
 
     it 'indicates that actions exist' do

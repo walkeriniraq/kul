@@ -16,6 +16,10 @@ module Kul
     puts "Kul framework hanging out. Version: #{Kul::VERSION}"
     Kul::Processor.run!
   end
+
+  def self.settings
+    Kul::FrameworkFactory.get_server_settings
+  end
 end
 
 require 'pathname'
@@ -38,12 +42,14 @@ require 'kul/responses/response_not_found'
 require 'kul/responses/response_render_file'
 require 'kul/responses/response_render_template'
 require 'kul/responses/response_text'
+require 'kul/responses/response_json'
 
 # framework includes
 require 'kul/framework/route'
 require 'kul/framework/filter'
 require 'kul/framework/base_app'
 require 'kul/framework/base_server'
+require 'kul/framework/server_settings'
 require 'kul/framework/framework_factory'
 require 'kul/framework/processor'
 require 'kul/framework/request_context'

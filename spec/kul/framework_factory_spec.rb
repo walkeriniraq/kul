@@ -2,29 +2,27 @@ require 'spec_helper'
 
 describe Kul::FrameworkFactory do
 
-  context '#create_server' do
+  describe '.create_server' do
     context 'when there is no server.rb file' do
       it 'should return a server object' do
         inside_empty_server do
-          test = Kul::FrameworkFactory.create_server
+          test = Kul::FrameworkFactory.get_server
           test.should be_a Kul::BaseServer
         end
       end
     end
-
     context 'when the Server class is defined in the server.rb' do
       it 'should return the correct server object' do
         inside_test_server do
-          test = Kul::FrameworkFactory.create_server
+          test = Kul::FrameworkFactory.get_server
           test.should be_a Server
         end
       end
     end
-
     context 'when the Server class is not defined in the server.rb' do
       it 'should return a Kul::Server object' do
         test_server_context('special_test_server') do
-          test = Kul::FrameworkFactory.create_server
+          test = Kul::FrameworkFactory.get_server
           test.should be_a Kul::BaseServer
           Kernel.method_defined? :some_random_function
         end
@@ -32,7 +30,24 @@ describe Kul::FrameworkFactory do
     end
   end
 
-  context '#find_module' do
+  describe '.get_app' do
+    it 'creates an app instance' do
+      inside_test_server do
+        test = Kul::FrameworkFactory.get_app 'foo'
+        test.should be
+        test.should be_a FooApp
+      end
+    end
+    it 'creates a base app if there is no app file present' do
+      inside_test_server do
+        test = Kul::FrameworkFactory.get_app 'no_app'
+        test.should be
+        test.should be_a Kul::BaseApp
+      end
+    end
+  end
+
+  describe '.get_controller' do
     it 'returns nil if the controller file does not exist' do
       inside_empty_server do
         test = Kul::FrameworkFactory.get_controller Kul::Path.new('test/more_test')
@@ -41,11 +56,10 @@ describe Kul::FrameworkFactory do
     end
     it 'returns nil if the folder structure does not exist' do
       inside_empty_server do
-        test = Kul::FrameworkFactory.get_controller Kul::Path.new('foo/bar')
+        test = Kul::FrameworkFactory.get_controller Kul::Path.new('blah/test')
         test.should be_nil
       end
     end
-    
     it 'returns the module from the file if it exists' do
       inside_test_server do
         test = Kul::FrameworkFactory.get_controller Kul::Path.new('foo/bar')
@@ -56,21 +70,119 @@ describe Kul::FrameworkFactory do
     end
   end
 
-  context '#create_app' do
-    it 'creates an app instance' do
-      inside_test_server do
-        test = Kul::FrameworkFactory.new.create_app 'foo'
-        test.should be
-        test.should be_a FooApp
-      end
+  describe '.factory_instance' do
+    it 'returns an instance of the factory' do
+      test = Kul::FrameworkFactory.factory_instance
+      test.should be
+      test.should be_a Kul::FrameworkFactory
     end
-
-    it 'creates a base app if there is no app file present' do
-      inside_test_server do
-        test = Kul::FrameworkFactory.new.create_app 'no_app'
-        test.should be
-        test.should be_a Kul::BaseApp
-      end
+    it 'returns the same instance' do
+      instance = Kul::FrameworkFactory.factory_instance
+      test = Kul::FrameworkFactory.factory_instance
+      instance.should equal test
     end
   end
+
+  describe '#get_server_settings' do
+    it 'returns the base server settings' do
+      test = Kul::FrameworkFactory.get_server_settings
+      test.should be_a Kul::ServerSettings
+    end
+    it 'returns the same settings' do
+      settings = Kul::FrameworkFactory.get_server_settings
+      test = Kul::FrameworkFactory.get_server_settings
+      test.should equal settings
+    end
+  end
+
+  # TODO: test the reload_symbols, remove_symbol, and check_file methods instead of load_class
+  describe '#load_class' do
+    it 'returns :not_exist if the file does not exist' do
+      inside_test_server do
+        test = Kul::FrameworkFactory.new.load_class('CompletelyUndefinedThing', 'foo.rb')
+        test.should == :file_not_exist
+      end
+    end
+    it 'returns :loaded if the class is loaded' do
+      inside_test_server do
+        test = Kul::FrameworkFactory.new.load_class('Server', 'server.rb')
+        test.should == :load
+      end
+    end
+    it 'returns :no_change for the second request' do
+      inside_test_server do
+        factory = Kul::FrameworkFactory.new
+        factory.load_class('Server', 'server.rb')
+        test = factory.load_class('Server', 'server.rb')
+        test.should == :no_change
+      end
+    end
+    it 'loads the class' do
+      inside_test_server do
+        # want to make sure that the class is not defined
+        Object.send(:remove_const, :VeryUniqueClass) if Object.const_defined?(:VeryUniqueClass)
+        test = Kul::FrameworkFactory.new.load_class(:VeryUniqueClass, 'foo/very_unique_class.rb')
+        test.should == :load
+        Object.const_defined?(:VeryUniqueClass).should be_true
+      end
+    end
+    it 'reloads the class' do
+      write_first_file
+      factory = Kul::FrameworkFactory.new
+      factory.load_class(:ReloadFoo, 'test.tmp')
+      ReloadFoo.new.public_methods.should include :foo
+      write_second_file
+      test = factory.load_class(:ReloadFoo, hacked_pathname('test.tmp'))
+      test.should == :reload
+      ReloadFoo.new.public_methods.should include :bar
+      ReloadFoo.new.public_methods.should_not include :foo
+    end
+    it 'returns :file_not_exist if the file gets deleted' do
+      write_first_file
+      factory = Kul::FrameworkFactory.new
+      factory.load_class(:ReloadFoo, 'test.tmp')
+      ReloadFoo.new.public_methods.should include :foo
+      File.delete('test.tmp')
+      test = factory.load_class(:ReloadFoo, 'test.tmp')
+      test.should == :file_not_exist
+      Object.const_defined?(:ReloadFoo).should be_false
+    end
+    it 'class gets undefined' do
+      write_first_file
+      factory = Kul::FrameworkFactory.new
+      factory.load_class(:ReloadFoo, 'test.tmp')
+      ReloadFoo.new.public_methods.should include :foo
+      File.open('test.tmp', 'w') { |file| file.write '' }
+      factory.load_class(:ReloadFoo, hacked_pathname('test.tmp'))
+      Object.const_defined?(:ReloadFoo).should be_false
+    end
+  end
+
+  def hacked_pathname(str)
+    # file modification times are only accurate to the second - so we hack the hell out of pathname
+    path = Pathname.new(str).expand_path
+    path.stub(:mtime).and_return(Time.now + 1)
+    path
+  end
+
+  def write_first_file
+    File.open('test.tmp', 'w') do |file|
+      file.write <<TEMP_CLASS
+        class ReloadFoo
+          attr_accessor :foo
+        end
+TEMP_CLASS
+    end
+  end
+
+  def write_second_file
+    File.open('test.tmp', 'w') do |file|
+      file.write <<TEMP_CLASS
+        class ReloadFoo
+          attr_accessor :bar
+        end
+TEMP_CLASS
+    end
+  end
+
 end

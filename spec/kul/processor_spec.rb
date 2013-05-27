@@ -38,7 +38,7 @@ describe Kul::Processor do
       opts[:verb].should == :POST
       Kul::RequestContext.new(opts)
     end
-    post '/foo/bar/post_action?test=a%20test'
+    post '/foo/actions/post_action?test=a%20test'
   end
 
   it 'makes PUT actions work' do
@@ -46,7 +46,7 @@ describe Kul::Processor do
       opts[:verb].should == :PUT
       Kul::RequestContext.new(opts)
     end
-    put '/foo/bar/post_action?test=a%20test'
+    put '/foo/actions/post_action?test=a%20test'
   end
 
   it 'makes DELETE actions work' do
@@ -54,7 +54,7 @@ describe Kul::Processor do
       opts[:verb].should == :DELETE
       Kul::RequestContext.new(opts)
     end
-    delete '/foo/bar/post_action?test=a%20test'
+    delete '/foo/actions/post_action?test=a%20test'
   end
 
 end

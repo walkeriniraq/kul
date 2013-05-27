@@ -9,7 +9,7 @@ class Kul::Route < Kul::Path
 
   def server
     if @server.nil?
-      @server = { value: Kul::FrameworkFactory.create_server }
+      @server = { value: Kul::FrameworkFactory.get_server }
     end
     @server[:value]
   end

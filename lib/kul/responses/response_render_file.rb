@@ -1,12 +1,7 @@
 class ResponseRenderFile < Kul::Response
   include HashInitialize
 
-  attr_accessor :file
-
-  def initialize(processor, opts = {})
-    initialize_values opts
-    @processor = processor
-  end
+  attr_accessor :file, :processor
 
   def render
     @processor.send_file @file
