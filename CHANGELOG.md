@@ -1,3 +1,13 @@
+## 0.1.2
+  - Improved handling of exceptions
+  - Much improved code reloading
+  - Server settings file
+  - Use server settings to enable session
+  - Responses now can define a content type
+  - Helper for json responses
+  - Fixed a bug where controller methods were not returning correctly
+  - Fixed a bug in route listing
+
 ## 0.1.1
   - MVC lives again!
   - Can make post actions
