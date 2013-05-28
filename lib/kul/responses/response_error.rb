@@ -4,6 +4,6 @@ class ResponseError < Kul::Response
   attr_accessor :message
 
   def render
-    raise message
+    [500, @message]
   end
 end

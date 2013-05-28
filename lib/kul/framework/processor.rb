@@ -34,7 +34,9 @@ class Kul::Processor < Sinatra::Base
     return response.render if response.respond_to? :render
     response.to_s
   rescue => e
+    # TODO: replace this with logging
     puts "Recieved error: #{e.to_s}"
+    puts e.backtrace
     ResponseError.new(message: e.to_s).render
   end
 

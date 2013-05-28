@@ -57,4 +57,11 @@ describe Kul::Processor do
     delete '/foo/actions/post_action?test=a%20test'
   end
 
+  it 'handles exceptions' do
+    Kul::FrameworkFactory.stub(:create_request).and_throw 'This is an exception!'
+    get '/'
+    last_response.should be_server_error
+    last_response.body.should include 'This is an exception!'
+  end
+
 end

@@ -17,6 +17,10 @@ class Kul::RequestContext
     route_to_file
   end
 
+  def server
+    @route.server
+  end
+
   def route_to_file
     route_type_list = Kul::FrameworkFactory.get_route_type_list
     return ResponseNotFound.new unless route_type_list.handle_type? @route.extension
