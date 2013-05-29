@@ -1,9 +1,12 @@
 # this class handles the sinatra request and builds the request context
 class Kul::Processor < Sinatra::Base
 
+  enable :logging
   settings = Kul.settings
   set :extension_includes, settings.served_file_extensions
   enable :sessions if settings.enable_sessions
+  set :protection, :except => settings.disable_protection unless settings.disable_protection == false || settings.disable_protection == true
+  disable :protection if settings.disable_protection == true
 
   get '/favicon.ico' do
     send_file 'favicon.ico'

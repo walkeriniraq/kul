@@ -1,3 +1,7 @@
+## 0.1.3
+  - Added setting to disable protection for bugfixing
+  - Enabled logging
+
 ## 0.1.2
   - Improved handling of exceptions
   - Much improved code reloading
