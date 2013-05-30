@@ -1,3 +1,10 @@
+## 0.1.5
+  - Quick release to fix bug in non-jruby code
+
+## 0.1.4
+  - Models!
+  - Fixed race condition in code reloading
+
 ## 0.1.3
   - Added setting to disable protection for bugfixing
   - Enabled logging
