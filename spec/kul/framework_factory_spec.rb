@@ -83,6 +83,15 @@ describe Kul::FrameworkFactory do
     end
   end
 
+  describe '.load_models' do
+    it 'loads the model classes' do
+      inside_test_server do
+        Kul::FrameworkFactory.load_models()
+        Class.const_defined?(:TestClass).should be_true
+      end
+    end
+  end
+
   describe '#get_server_settings' do
     it 'returns the base server settings' do
       test = Kul::FrameworkFactory.get_server_settings
@@ -95,7 +104,6 @@ describe Kul::FrameworkFactory do
     end
   end
 
-  # TODO: test the reload_symbols, remove_symbol, and check_file methods instead of load_class
   describe '#load_class' do
     it 'returns :not_exist if the file does not exist' do
       inside_test_server do
@@ -126,47 +134,65 @@ describe Kul::FrameworkFactory do
         Object.const_defined?(:VeryUniqueClass).should be_true
       end
     end
-    it 'reloads the class' do
-      write_first_file
-      factory = Kul::FrameworkFactory.new
-      factory.load_class(:ReloadFoo, 'test.tmp')
-      ReloadFoo.new.public_methods.should include :foo
-      write_second_file
-      test = factory.load_class(:ReloadFoo, hacked_pathname('test.tmp'))
-      test.should == :reload
-      ReloadFoo.new.public_methods.should include :bar
-      ReloadFoo.new.public_methods.should_not include :foo
+    context 'with a test.rb file' do
+      after(:each) { File.delete 'test.rb' if File.exist? 'test.rb' }
+
+      it 'reloads the class' do
+        test = change_and_reload_file
+        test.should == :reload
+        ReloadFoo.new.public_methods.should include :bar
+        ReloadFoo.new.public_methods.should_not include :foo
+      end
+      it 'returns :file_not_exist if the file gets deleted' do
+        write_first_file
+        factory = Kul::FrameworkFactory.new
+        factory.load_class(:ReloadFoo, 'test.rb')
+        ReloadFoo.new.public_methods.should include :foo
+        File.delete('test.rb')
+        test = factory.load_class(:ReloadFoo, 'test.rb')
+        test.should == :file_not_exist
+        Object.const_defined?(:ReloadFoo).should be_false
+      end
+      it 'class gets undefined' do
+        write_first_file
+        factory = Kul::FrameworkFactory.new
+        factory.load_class(:ReloadFoo, 'test.rb')
+        ReloadFoo.new.public_methods.should include :foo
+        File.open('test.rb', 'w') { |file| file.write '' }
+        factory.load_class(:ReloadFoo, hacked_pathname('test.rb'))
+        Object.const_defined?(:ReloadFoo).should be_false
+      end
+      context 'in production mode' do
+        before(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :production }
+        after(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :test }
+
+        it 'does not reload the class in production mode' do
+          test = change_and_reload_file
+          test.should == :no_change
+          ReloadFoo.new.public_methods.should_not include :bar
+          ReloadFoo.new.public_methods.should include :foo
+        end
+      end
     end
-    it 'returns :file_not_exist if the file gets deleted' do
-      write_first_file
-      factory = Kul::FrameworkFactory.new
-      factory.load_class(:ReloadFoo, 'test.tmp')
-      ReloadFoo.new.public_methods.should include :foo
-      File.delete('test.tmp')
-      test = factory.load_class(:ReloadFoo, 'test.tmp')
-      test.should == :file_not_exist
-      Object.const_defined?(:ReloadFoo).should be_false
-    end
-    it 'class gets undefined' do
-      write_first_file
-      factory = Kul::FrameworkFactory.new
-      factory.load_class(:ReloadFoo, 'test.tmp')
-      ReloadFoo.new.public_methods.should include :foo
-      File.open('test.tmp', 'w') { |file| file.write '' }
-      factory.load_class(:ReloadFoo, hacked_pathname('test.tmp'))
-      Object.const_defined?(:ReloadFoo).should be_false
-    end
+  end
+
+  def change_and_reload_file
+    write_first_file
+    factory = Kul::FrameworkFactory.new
+    factory.load_class(:ReloadFoo, 'test.rb')
+    write_second_file
+    factory.load_class(:ReloadFoo, hacked_pathname('test.rb'))
   end
 
   def hacked_pathname(str)
     # file modification times are only accurate to the second - so we hack the hell out of pathname
-    path = Pathname.new(str).expand_path
+    path = Pathname.new(str)
     path.stub(:mtime).and_return(Time.now + 1)
     path
   end
 
   def write_first_file
-    File.open('test.tmp', 'w') do |file|
+    File.open('test.rb', 'w') do |file|
       file.write <<TEMP_CLASS
         class ReloadFoo
           attr_accessor :foo
@@ -176,7 +202,7 @@ TEMP_CLASS
   end
 
   def write_second_file
-    File.open('test.tmp', 'w') do |file|
+    File.open('test.rb', 'w') do |file|
       file.write <<TEMP_CLASS
         class ReloadFoo
           attr_accessor :bar

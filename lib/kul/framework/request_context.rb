@@ -11,6 +11,7 @@ class Kul::RequestContext
   end
 
   def handle
+    server.load_models if server.respond_to? :load_models
     # server filtering
     # app filtering
     return render_action if @route.has_action?

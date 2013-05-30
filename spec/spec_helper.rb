@@ -3,7 +3,7 @@ ENV['RACK_ENV']='test'
 require 'coveralls'
 Coveralls.wear!
 
-require File.join(File.dirname(__FILE__), '..', 'lib', 'kul.rb')
+require_relative '../lib/kul.rb'
 
 require 'sinatra'
 require 'rack/test'

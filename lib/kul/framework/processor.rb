@@ -7,6 +7,8 @@ class Kul::Processor < Sinatra::Base
   enable :sessions if settings.enable_sessions
   set :protection, :except => settings.disable_protection unless settings.disable_protection == false || settings.disable_protection == true
   disable :protection if settings.disable_protection == true
+  set :server, settings.server_list unless settings.server_list.nil?
+  set :environment, settings.server_mode
 
   get '/favicon.ico' do
     send_file 'favicon.ico'

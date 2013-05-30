@@ -18,10 +18,6 @@ class Kul::FrameworkFactory
     Kul::RequestContext.new options
   end
 
-  def self.load_class(clazz, path_to_file)
-    factory_instance.load_class(clazz, path_to_file)
-  end
-
   # TODO: refactor this into settings
   def self.get_route_type_list
     Kul::RouteTypeList.new
@@ -31,19 +27,33 @@ class Kul::FrameworkFactory
     @instance ||= Kul::FrameworkFactory.new
   end
 
+  def self.load_models(path = '.')
+    path = Pathname.new(path) + 'models'
+    return unless path.exist? && path.directory?
+    path.each_child(false) do |file|
+      if file.extname == '.rb'
+        file = path + file
+        clazz = file.basename.to_s.rsub('.rb', '').classify
+        factory_instance.load_class(clazz, file)
+      end
+    end
+  end
+
   def self.get_server_settings
     return @server_settings unless @server_settings.nil?
     @server_settings ||= Kul::ServerSettings.new
-    load SERVER_SETTINGS_FILENAME if File.exists? SERVER_SETTINGS_FILENAME
+    # TODO: change this to require for thread safety
+    require SERVER_SETTINGS_FILENAME if File.exists? SERVER_SETTINGS_FILENAME
     @server_settings
   end
 
   def initialize
     @file_listing = {}
+    @load_lock = Mutex.new
   end
 
   def load_class(clazz, path_to_file)
-    path_to_file = Pathname.new(path_to_file).expand_path unless path_to_file.is_a?(Pathname)
+    path_to_file = Pathname.new(path_to_file) unless path_to_file.is_a?(Pathname)
     reload_symbols path_to_file, clazz
   end
 
@@ -63,7 +73,7 @@ class Kul::FrameworkFactory
 
   def find_controller_module(app_name, controller_name)
     return if app_name.nil? || controller_name.nil?
-    controller_file = Pathname.new("#{app_name}/#{controller_name}/controller.rb").expand_path
+    controller_file = Pathname.new("#{app_name}/#{controller_name}/controller.rb")
     app_name = app_name.classify
     controller_name = controller_name.classify
     reload_symbols controller_file, "#{app_name}::#{controller_name}"
@@ -74,15 +84,23 @@ class Kul::FrameworkFactory
   private
 
   def reload_symbols(path, *symbols)
+    unless [:development, :test].include? Kul::FrameworkFactory.get_server_settings.server_mode
+      require path.expand_path if path.exist?
+      return :no_change
+    end
     result = check_file(path)
     case result
       when :reload
-        symbols.each { |sym| remove_symbol(sym.to_s) }
-        @file_listing[path.to_s] = path.mtime
-        load path
+        @load_lock.synchronize do
+          symbols.each { |sym| remove_symbol(sym.to_s) }
+          @file_listing[path.to_s] = path.mtime
+          load path.expand_path
+        end
       when :load
-        @file_listing[path.to_s] = path.mtime
-        load path
+        @load_lock.synchronize do
+          @file_listing[path.to_s] = path.mtime
+          load path.expand_path
+        end
       when :file_not_exist
         symbols.each { |sym| remove_symbol(sym.to_s) }
     end
@@ -103,8 +121,6 @@ class Kul::FrameworkFactory
 
   def check_file(path)
     if @file_listing.has_key? path.to_s
-      # TODO: test and turn this on when the settings exist
-      #return :no_change if Kul::FrameworkFactory.get_server_settings.server_mode == :production
       return :file_not_exist unless path.exist?
       return :no_change if path.mtime == @file_listing[path.to_s]
       return :reload
