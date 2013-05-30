@@ -36,6 +36,15 @@ describe Kul::Actionize do
       get 'test' do
         return 'foo'
       end
+
+      get 'call_helper' do
+        helper_method
+      end
+
+      def helper_method
+        'foobarbaz'
+      end
+
     end
 
     it 'has a value return properly' do
@@ -73,6 +82,12 @@ describe Kul::Actionize do
       instance = { foo: 'baz' }
       test = ActionTest.execute_action instance, 'baz', :GET
       test.should == 'baz'
+    end
+
+    it 'can call a helper method' do
+      instance = {}
+      test = ActionTest.execute_action instance, 'call_helper', :GET
+      test.should == 'foobarbaz'
     end
   end
 

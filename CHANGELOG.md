@@ -1,3 +1,6 @@
+## 0.1.6
+  - Applying the controller module to the request instance so that arbitrary helper functions can be executed
+
 ## 0.1.5
   - Quick release to fix bug in non-jruby code
 
