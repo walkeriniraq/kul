@@ -42,8 +42,7 @@ class Kul::FrameworkFactory
   def self.get_server_settings
     return @server_settings unless @server_settings.nil?
     @server_settings ||= Kul::ServerSettings.new
-    # TODO: change this to require for thread safety
-    require SERVER_SETTINGS_FILENAME if File.exists? SERVER_SETTINGS_FILENAME
+    require Pathname.new(SERVER_SETTINGS_FILENAME).expand_path if File.exists? SERVER_SETTINGS_FILENAME
     @server_settings
   end
 
