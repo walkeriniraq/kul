@@ -30,42 +30,25 @@ describe Kul::FrameworkFactory do
     end
   end
 
-  describe '.get_app' do
-    it 'creates an app instance' do
-      inside_test_server do
-        test = Kul::FrameworkFactory.get_app 'foo'
-        test.should be
-        test.should be_a FooApp
-      end
-    end
-    it 'creates a base app if there is no app file present' do
-      inside_test_server do
-        test = Kul::FrameworkFactory.get_app 'no_app'
-        test.should be
-        test.should be_a Kul::BaseApp
-      end
-    end
-  end
-
   describe '.get_controller' do
     it 'returns nil if the controller file does not exist' do
       inside_empty_server do
-        test = Kul::FrameworkFactory.get_controller Kul::Path.new('test/more_test')
+        test = Kul::FrameworkFactory.get_controller Kul::Path.new('more_test')
         test.should be_nil
       end
     end
     it 'returns nil if the folder structure does not exist' do
       inside_empty_server do
-        test = Kul::FrameworkFactory.get_controller Kul::Path.new('blah/test')
+        test = Kul::FrameworkFactory.get_controller Kul::Path.new('test')
         test.should be_nil
       end
     end
     it 'returns the module from the file if it exists' do
       inside_test_server do
-        test = Kul::FrameworkFactory.get_controller Kul::Path.new('foo/bar')
+        test = Kul::FrameworkFactory.get_controller Kul::Path.new('bar')
         test.should be
         test.should be_a Module
-        test.to_s.should == 'Foo::Bar'
+        test.to_s.should == 'BarController'
       end
     end
   end
@@ -129,7 +112,7 @@ describe Kul::FrameworkFactory do
       inside_test_server do
         # want to make sure that the class is not defined
         Object.send(:remove_const, :VeryUniqueClass) if Object.const_defined?(:VeryUniqueClass)
-        test = Kul::FrameworkFactory.new.load_class(:VeryUniqueClass, 'foo/very_unique_class.rb')
+        test = Kul::FrameworkFactory.new.load_class(:VeryUniqueClass, 'app/very_unique_class.rb')
         test.should == :load
         Object.const_defined?(:VeryUniqueClass).should be_true
       end
@@ -164,7 +147,7 @@ describe Kul::FrameworkFactory do
       end
       context 'in production mode' do
         before(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :production }
-        after(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :test }
+        after(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :app }
 
         it 'does not reload the class in production mode' do
           test = change_and_reload_file
@@ -182,13 +165,6 @@ describe Kul::FrameworkFactory do
     factory.load_class(:ReloadFoo, 'test.rb')
     write_second_file
     factory.load_class(:ReloadFoo, hacked_pathname('test.rb'))
-  end
-
-  def hacked_pathname(str)
-    # file modification times are only accurate to the second - so we hack the hell out of pathname
-    path = Pathname.new(str)
-    path.stub(:mtime).and_return(Time.now + 1)
-    path
   end
 
   def write_first_file

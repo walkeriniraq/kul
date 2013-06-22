@@ -1,18 +1,8 @@
 class Kul::Path
-  APP_REGEX = %r|^\w*[/\?]|
-  CONTROLLER_REGEX = %r|\w*/\w*[/\?]|
+  CONTROLLER_REGEX = %r|^\w*[/\?]|
 
   def initialize(path)
     @path = path.to_s
-  end
-
-  def app_name
-    if @app_name.nil?
-      name = @path[APP_REGEX]
-      name = name[0..-2] unless name.nil?
-      @app_name = { value: name }
-    end
-    @app_name[:value]
   end
 
   def controller_name
@@ -35,16 +25,16 @@ class Kul::Path
   end
 
   def file_path
-    test = @path.split('?').first
-    return 'index.html' if test.nil?
-    unless test.include? '.'
-      if test[-1] == '/'
-        return "#{test}index.html"
+    path = @path.split('?').first
+    return 'index.html' if path.nil?
+    unless path.include? '.'
+      if path[-1] == '/'
+        return "#{path}index.html"
       else
-        return "#{test}/index.html"
+        return "#{path}/index.html"
       end
     end
-    test
+    path
   end
 
   private
@@ -52,9 +42,9 @@ class Kul::Path
   def get_controller_name
     parts = @path.split('/')
     case parts.count
-      when 3
-        return parts[1]
       when 2
+        return parts[0]
+      when 1
         parts = parts.last.split('?')
         return parts[0] unless parts[0].empty? || parts[0].include?('.')
     end
@@ -64,7 +54,7 @@ class Kul::Path
   def get_action_name
     return nil if controller_name.nil?
     parts = @path.split('/')
-    if parts.count == 3
+    if parts.count == 2
         parts = parts.last.split('?')
         return parts[0] unless parts[0].empty? || parts[0].include?('.')
     end

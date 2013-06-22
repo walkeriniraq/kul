@@ -5,7 +5,7 @@ describe ResponseRenderTemplate do
     it 'renders a template' do
       inside_test_server do
         processor = double(:content_type => nil)
-        response = ResponseRenderTemplate.new processor: processor, file: 'foo/bar/test_erb.html.erb', context: Kul::RequestContext.new(path: 'foo/bar/test_erb.html')
+        response = ResponseRenderTemplate.new processor: processor, file: 'app/bar/test_erb.html.erb', context: Kul::RequestContext.new(path: 'bar/test_erb.html')
         test = response.render
         test.should == 'This is my test'
       end
@@ -21,7 +21,7 @@ describe ResponseRenderTemplate do
         context.test = 'foo'
         context.other_test = 'bar'
         context.extension = 'html'
-        response = ResponseRenderTemplate.new processor: processor, file: 'foo/context_test.html.erb', context: context
+        response = ResponseRenderTemplate.new processor: processor, file: 'app/context_test.html.erb', context: context
         test = response.render
         test.should == 'test: foo, other: bar'
       end

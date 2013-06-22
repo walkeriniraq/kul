@@ -6,12 +6,8 @@ class Kul::FrameworkFactory
     factory_instance.get_server
   end
 
-  def self.get_app(app_name)
-    factory_instance.get_app app_name
-  end
-
   def self.get_controller(path)
-    factory_instance.find_controller_module path.app_name, path.controller_name
+    factory_instance.find_controller_module path.controller_name
   end
 
   def self.create_request(options)
@@ -62,22 +58,13 @@ class Kul::FrameworkFactory
     Kul::BaseServer.new
   end
 
-  def get_app(app_name)
-    app_file = "#{app_name}/#{app_name}_app.rb"
-    app_class = "#{app_name}_app".classify
-    load_class app_class, app_file
-    return Object.const_get(app_class).new if Object.const_defined? app_class
-    Kul::BaseApp.new
-  end
-
-  def find_controller_module(app_name, controller_name)
-    return if app_name.nil? || controller_name.nil?
-    controller_file = Pathname.new("#{app_name}/#{controller_name}/controller.rb")
-    app_name = app_name.classify
-    controller_name = controller_name.classify
-    reload_symbols controller_file, "#{app_name}::#{controller_name}"
-    return unless Module.const_defined?(app_name) && Module.const_get(app_name).const_defined?(controller_name)
-    Module.const_get(app_name).const_get controller_name
+  def find_controller_module(controller_name)
+    return if controller_name.nil?
+    controller_file = Pathname.new("app/#{controller_name}/#{controller_name}_controller.rb")
+    controller_name = "#{controller_name}_controller".classify
+    reload_symbols controller_file, "#{controller_name}"
+    return unless Module.const_defined?(controller_name)
+    Module.const_get controller_name
   end
 
   private

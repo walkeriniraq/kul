@@ -31,3 +31,11 @@ module RSpec::Core::Pending
     old_pending(reason || "Not yet implemented")
   end
 end
+
+def hacked_pathname(str)
+  # file modification times are only accurate to the second - so we hack the hell out of pathname
+  path = Pathname.new(str)
+  path.stub(:mtime).and_return(Time.now + 1)
+  path
+end
+

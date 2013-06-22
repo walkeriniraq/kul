@@ -3,7 +3,7 @@ require 'andand'
 class Kul::RequestContext
   include HashInitialize
 
-  attr_reader :path, :params, :processor, :verb, :session
+  attr_reader :path, :params, :processor, :verb, :session, :route
 
   def initialize(params = {})
     initialize_values(params)
@@ -32,6 +32,8 @@ class Kul::RequestContext
             return render_file render_path
           when :template
             return render_template render_path
+          when :compile
+            return compiled_file render_path
         end
       end
     end
@@ -40,6 +42,10 @@ class Kul::RequestContext
 
   def extension
     @route.extension
+  end
+
+  def compiled_file(filename)
+    ResponseCompiledFile.new file: filename, processor: processor, request: self
   end
 
   def render_file(filename)

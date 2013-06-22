@@ -7,12 +7,12 @@ class Kul::RouteTypeList
             {:instruction => :file}
         ],
         'js' => [
-            {:extra_extension =>  '.coffee', :instruction => :template},
+            {:extra_extension =>  '.coffee', :instruction => :compile},
             {:instruction => :file}
         ],
         'css' => [
-            {:extra_extension =>  '.scss', :instruction => :template},
-            {:extra_extension =>  '.sass', :instruction => :template},
+            {:extra_extension =>  '.scss', :instruction => :compile},
+            {:extra_extension =>  '.sass', :instruction => :compile},
             {:instruction => :file}
         ]
     }
