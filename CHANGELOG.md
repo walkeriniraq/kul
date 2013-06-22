@@ -1,5 +1,9 @@
-## 0.1.6
+## 0.2.0
   - Applying the controller module to the request instance so that arbitrary helper functions can be executed
+  - Moved controllers into 'app' folder - breaking change to library
+  - Coffeescript and Sass are now cached inside the temp folder
+  - Controller names now need to have "controller" appended to them
+  - Changed the way that modules get applied to requests
 
 ## 0.1.5
   - Quick release to fix bug in non-jruby code

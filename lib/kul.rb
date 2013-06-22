@@ -41,6 +41,7 @@ require 'kul/responses/response_error'
 require 'kul/responses/response_not_found'
 require 'kul/responses/response_render_file'
 require 'kul/responses/response_render_template'
+require 'kul/responses/response_compiled_file'
 require 'kul/responses/response_text'
 require 'kul/responses/response_json'
 
