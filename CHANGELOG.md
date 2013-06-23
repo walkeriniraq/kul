@@ -1,4 +1,8 @@
 ## 0.2.0
+  - Added the ability to specify a whitelist for rack protection
+  - Cleaned up the settings a bit
+
+## 0.2.0
   - Applying the controller module to the request instance so that arbitrary helper functions can be executed
   - Moved controllers into 'app' folder - breaking change to library
   - Coffeescript and Sass are now cached inside the temp folder

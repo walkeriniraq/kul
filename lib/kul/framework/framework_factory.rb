@@ -70,7 +70,7 @@ class Kul::FrameworkFactory
   private
 
   def reload_symbols(path, *symbols)
-    unless [:development, :test].include? Kul::FrameworkFactory.get_server_settings.server_mode
+    if Kul::FrameworkFactory.get_server_settings.production?
       require path.expand_path if path.exist?
       return :no_change
     end

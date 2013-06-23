@@ -147,7 +147,7 @@ describe Kul::FrameworkFactory do
       end
       context 'in production mode' do
         before(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :production }
-        after(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :app }
+        after(:all) { Kul::FrameworkFactory.get_server_settings.server_mode = :test }
 
         it 'does not reload the class in production mode' do
           test = change_and_reload_file
