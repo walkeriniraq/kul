@@ -4,6 +4,18 @@ describe Kul::RouteTypeList do
 
   context 'default router' do
     context '#handle_extension?' do
+      it 'returns true for .png files' do
+        described_class.new.handle_type?('png').should be_true
+      end
+      it 'returns true for .jpg files' do
+        described_class.new.handle_type?('jpg').should be_true
+      end
+      it 'returns true for .jpeg files' do
+        described_class.new.handle_type?('jpeg').should be_true
+      end
+      it 'returns true for .gif files' do
+        described_class.new.handle_type?('gif').should be_true
+      end
       it 'returns true for .js files' do
         described_class.new.handle_type?('js').should be_true
       end
